@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}{{ action.name }} - Activity Details{% endblock %}
+
+{% block head %}
+<style>
+.action-header {
+  background: #4CAF50;
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.action-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.action-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+}
+
+.properties-box, .logs-list {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.properties-box pre {
+  background: #f8f8f8;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+
+.log-entry {
+  border-bottom: 1px solid #eee;
+  padding: 0.5rem 0;
+}
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.log-delta {
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.log-note {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.action-buttons a {
+  text-decoration: none;
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  font-size: 0.95rem;
+  text-align: center;
+}
+.action-buttons a.secondary {
+  background-color: #ccc;
+  color: #333;
+}
+
+@media (max-width: 600px) {
+  .log-meta { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="action-header">
+  <h1>{{ action.name }}</h1>
+  {% if action.notes %}<p>{{ action.notes }}</p>{% endif %}
+</div>
+
+<div class="action-buttons">
+  <a href="{{ url_for('action.log_activity', action_id=action.id) }}">Add Log</a>
+  <a href="{{ url_for('action.list_actions') }}" class="secondary">← Back</a>
+</div>
+
+{% if action.properties %}
+<div class="properties-box">
+  <h3>General Properties</h3>
+  <pre>{{ action.properties | tojson(indent=2) }}</pre>
+</div>
+{% endif %}
+
+<h2>Recent Logs</h2>
+<div class="logs-list">
+{% if logs %}
+  {% for log in logs %}
+    <div class="log-entry">
+      <div class="log-meta">
+        <span>{{ log.timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</span>
+        <span class="log-delta">▲{{ log.delta }}</span>
+      </div>
+
+      {% if log.note %}
+        <div class="log-note">{{ log.note }}</div>
+      {% endif %}
+
+      {% if log.properties %}
+        <pre>{{ log.properties | tojson(indent=2) }}</pre>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No logs yet. Add one!</p>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Action Summary{% endblock %}
+
+
+
+{% block content %}
+
+<h1>Summary ({{ period }})</h1>
+<a href="{{ url_for('action.list_actions') }}">To actions</a>
+
+<!-- Period selector form -->
+<form method="get" action="{{ url_for('dashboard.view_summary') }}">
+    <label for="period">Select period:</label>
+    <select name="period" id="period">
+        <option value="day" {% if period == 'day' %}selected{% endif %}>Day</option>
+        <option value="week" {% if period == 'week' %}selected{% endif %}>Week</option>
+        <option value="month" {% if period == 'month' %}selected{% endif %}>Month</option>
+    </select>
+    <button type="submit">Update</button>
+</form>
+
+<!-- Chart canvas -->
+<canvas id="summaryChart" width="400" height="200"></canvas>
+
+<!-- Chart.js script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript">
+    // Read JSON data from the embedded script tag
+    const labels = {{ labels|tojson }}
+    const values = {{ values|tojson }}
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Count',
+            data: values,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    const ctx = document.getElementById('summaryChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

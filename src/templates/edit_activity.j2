@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Activity{% endblock %}
+
+{% block content %}
+<h1>Edit Activity</h1>
+
+<form method="post">
+    <label for="delta">Delta (amount):</label>
+    <input type="number" id="delta" name="delta" value="{{ log.delta }}" step="any" required>
+
+    <label for="notes">Notes:</label>
+    <textarea id="notes" name="notes">{{ action.notes or "" }}</textarea>
+
+    <label for="properties">Properties:</label>
+    <textarea id="properties" name="properties">{{ action.properties or "" }}</textarea>
+
+    <button type="submit">Save Changes</button>
+    <a href="{{ url_for('action.view_action_history', action_id=log.action_id) }}">Cancel</a>
+</form>
+{% endblock %}

@@ -47,6 +47,73 @@ def new_action():
     return render_template("new_action.j2")
 
 
+# Edit action
+@action_bp.route("/<int:action_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_action(action_id):
+    user = current_user()
+    assert user is not None
+
+    action = db_session.query(Action).filter_by(id=action_id, user_id=user.id).first()
+    if not action:
+        flash("Action not found.")
+        return redirect(url_for("action.list_actions"))
+
+    if request.method == "POST":
+        action.name = request.form["name"]
+        action.notes = request.form.get("notes", "")
+        properties_raw = request.form.get("properties", "{}")
+
+        try:
+            properties = json.loads(properties_raw) if properties_raw else {}
+            action.properties = properties
+        except json.JSONDecodeError:
+            flash("Invalid JSON in properties", "error")
+            return redirect(url_for("action.new_action"))
+
+        db_session.commit()
+        flash("Action updated successfully!")
+        return redirect(url_for("action.list_actions"))
+
+    return render_template("edit_action.j2", action=action)
+
+
+# Edit activity
+@action_bp.route("/<int:log_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_activity(log_id):
+    user = current_user()
+    assert user is not None
+
+    log = (
+        db_session.query(ActivityLog)
+        .join(Action)
+        .filter(ActivityLog.id == log_id, Action.user_id == user.id)
+        .first()
+    )
+    if not log:
+        flash("Activity not found.")
+        return redirect(url_for("action.list_actions"))
+
+    if request.method == "POST":
+        log.delta = request.form["delta"]
+        log.note = request.form.get("note", "")
+        properties_raw = request.form.get("properties", "{}")
+
+        try:
+            properties = json.loads(properties_raw) if properties_raw else {}
+            log.properties = properties
+        except json.JSONDecodeError:
+            flash("Invalid JSON in properties", "error")
+            return redirect(url_for("action.new_action"))
+
+        db_session.commit()
+        flash("Activity updated successfully!")
+        return redirect(url_for("action.view_action_history", action_id=log.action_id))
+
+    return render_template("edit_activity.j2", log=log)
+
+
 # Increment action (add log)
 @action_bp.route("/<int:action_id>/log", methods=["GET", "POST"])
 @login_required

@@ -15,7 +15,8 @@
     {% endif %}
     <br>
     <a href="{{ url_for('action.log_activity', action_id=act.id) }}">Add Log</a> |
-    <a href="{{ url_for('action.view_action', action_id=act.id) }}">View</a>
+    <a href="{{ url_for('action.view_action', action_id=act.id) }}">View</a> |
+    <a href="{{ url_for('dashboard.activity_summary', action_id=act.id) }}">Graphs</a>
   </li>
 {% else %}
   <li>No actions yet. <a href="{{ url_for('action.new_action') }}">Create one</a>.</li>

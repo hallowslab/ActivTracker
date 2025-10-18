@@ -2,18 +2,19 @@ import os
 from pathlib import Path
 from flask import Flask, render_template
 from dotenv import load_dotenv
+import numpy as np
 
-from auth_helpers import current_user
+from auth_helpers import current_user, login_required
+from model_helpers import get_activity_timeseries
 from routes.auth import auth_bp
 from routes.actions import action_bp
 from routes.api import api_bp
 from routes.dashboard import dashboard_bp
-from models import User
+from models import Action
 from database import db_session
 from cli import create_test_data
 
-app = Flask(__name__)
-app.secret_key = None
+app = Flask(__name__, static_folder="static", template_folder="templates")
 
 # Blueprints
 app.register_blueprint(auth_bp)
@@ -25,8 +26,57 @@ app.register_blueprint(dashboard_bp)
 app.cli.add_command(create_test_data)
 
 @app.route("/")
+@login_required
 def index():
-    return render_template("index.j2", user=current_user())
+    user = current_user()
+    assert user is not None
+
+    actions = db_session.query(Action).filter_by(user_id=user.id).all()
+    activity_data = []
+    total_actions = 0
+
+    for action in actions:
+        timeseries = get_activity_timeseries(user.id, action.id, days=30)
+        labels = [entry["date"] for entry in timeseries]
+        values = [entry["delta"] for entry in timeseries]
+        total_actions += sum(values)
+
+        x = np.arange(len(values))
+        y = np.array(values)
+        if len(values) > 1:
+            slope, intercept = np.polyfit(x, y, 1)
+            trend_line = (intercept + slope * x).tolist()
+        else:
+            trend_line = values
+
+        activity_data.append(
+            {
+                "name": action.name,
+                "values": values,
+                "trend_line": trend_line,
+                "labels": labels,
+            }
+        )
+
+    # Simple example of change metric: compare first and last week
+    if len(activity_data) > 0:
+        first_total = sum(sum(a["values"][:7]) for a in activity_data)
+        last_total = sum(sum(a["values"][-7:]) for a in activity_data)
+        trend_change = (
+            round(((last_total - first_total) / first_total * 100), 1)
+            if first_total
+            else 0
+        )
+    else:
+        trend_change = 0
+
+    return render_template(
+        "dashboard.j2",
+        activity_data=activity_data,
+        total_actions=total_actions,
+        period="last 30 days",
+        trend_change=trend_change,
+    )
 
 
 @app.teardown_appcontext
@@ -47,13 +97,14 @@ def init():
     load_dotenv()
     FLASK_ENV: str = os.getenv("FLASK_ENV", "development")
     _DEBUG: bool = True if FLASK_ENV == "development" else False
+    print(F"FLASK_ENV: {FLASK_ENV}, DEBUG: {_DEBUG}")
+    app.secret_key = "!DEBUG!"
     if FLASK_ENV == "production":
         try:
-            load_secret()
+            app.secret_key = load_secret()
         except:
-            raise
-    else:
-        app.secret_key = "!DEBUG!"
+            raise RuntimeError("Secret key file missing in production")
+    print(f"SECRET: {app.secret_key}")
     app.run(host="0.0.0.0", port=5000, debug=_DEBUG)
 
 

@@ -56,6 +56,14 @@ canvas {
   border: 1px solid #ddd;
   border-radius: 0.25rem;
 }
+
+@media (min-width: 700px) {
+  .activity-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
 </style>
 {% endblock %}
 

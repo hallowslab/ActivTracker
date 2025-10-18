@@ -4,8 +4,17 @@ from models import Action, ActivityLog
 from datetime import datetime, timezone
 
 from auth_helpers import user_from_token, token_required
+from model_helpers import summarize_actions
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
+
+
+@api_bp.route("/summary", methods=["GET"])
+@token_required
+def api_summary(user):
+    period = request.args.get("period", "week")
+    summary = summarize_actions(user.id, period)
+    return jsonify(summary)
 
 
 # List actions

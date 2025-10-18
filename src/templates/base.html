@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Activity Tracker{% endblock %}</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+        nav a { margin-right: 10px; }
+        ul.flash { list-style: none; padding: 0; }
+        li.success { color: green; }
+        li.error { color: red; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('action.list_actions') }}">Actions</a>
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Login</a>
+            <a href="{{ url_for('auth.register') }}">Register</a>
+        {% endif %}
+    </nav>
+
+    <!-- ✅ Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <ul class="flash">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <!-- ✅ Main content block -->
+    {% block content %}{% endblock %}
+
+</body>
+</html>

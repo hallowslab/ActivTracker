@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Log {{ action.name }}{% endblock %}
+
+{% block content %}
+<h1>Log Activity for {{ action.name }}</h1>
+
+<form method="POST">
+    <label>Note (optional):</label>
+    <input type="text" name="note" placeholder="e.g. Easy morning run"><br>
+
+    <label>Delta (optional):</label>
+    <input type="number" name="delta" value="1" min="1"><br>
+
+    <label>Properties (optional, format=JSON):</label>
+    <input type="text" name="properties" placeholder='{"distance": "5km"}'><br>
+
+    <button type="submit">Log</button>
+</form>
+
+<a href="{{ url_for('action.view_action', action_id=action.id) }}">Back</a>
+{% endblock %}

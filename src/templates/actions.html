@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Your Actions{% endblock %}
+
+{% block content %}
+<h1>Your Actions</h1>
+
+<a href="{{ url_for('action.new_action') }}">+ New Action</a>
+<ul>
+{% for act in actions %}
+  <li>
+    <strong>{{ act.name }}</strong>
+    {% if act.notes %}
+      <em>({{ act.notes }})</em>
+    {% endif %}
+    <br>
+    <a href="{{ url_for('action.log_activity', action_id=act.id) }}">Add Log</a> |
+    <a href="{{ url_for('action.view_action', action_id=act.id) }}">View</a>
+  </li>
+{% else %}
+  <li>No actions yet. <a href="{{ url_for('action.new_action') }}">Create one</a>.</li>
+{% endfor %}
+</ul>
+{% endblock %}

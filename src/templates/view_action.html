@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}View {{ action.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ action.name }}</h1>
+
+<p>{{ action.notes }}</p>
+
+{% if action.properties %}
+<h3>General Properties</h3>
+<pre>{{ action.properties | tojson(indent=2) }}</pre>
+{% endif %}
+
+<a href="{{ url_for('action.log_activity', action_id=action.id) }}">Add New Log</a>
+<hr>
+
+<h2>Recent Logs</h2>
+{% if logs %}
+  <ul>
+  {% for log in logs %}
+    <li>
+      {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} — Δ {{ log.delta }}
+      {% if log.note %}<br>Note: {{ log.note }}{% endif %}
+      {% if log.properties %}
+        <br>Properties: <pre>{{ log.properties | tojson(indent=2) }}</pre>
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>No logs yet.</p>
+{% endif %}
+
+<a href="{{ url_for('action.list_actions') }}">Back</a>
+{% endblock %}

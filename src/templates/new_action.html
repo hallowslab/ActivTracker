@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Create Action{% endblock %}
+
+{% block content %}
+<h1>Create New Action</h1>
+<form method="POST">
+    Name: <input type="text" name="name" required><br>
+    Properties (JSON): <input type="text" name="properties" placeholder='{"distance": "km"}'><br>
+    <button type="submit">Create</button>
+</form>
+<a href="{{ url_for('action.list_actions') }}">Back</a>
+{% endblock %}

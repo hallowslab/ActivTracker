@@ -37,6 +37,7 @@ def load_secret(path: Path = Path(".secret")):
     except:
         raise
 
+
 def init():
     load_dotenv()
     FLASK_ENV: str = os.getenv("FLASK_ENV", "development")

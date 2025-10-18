@@ -9,6 +9,7 @@ from pathlib import Path
 import argparse
 import sys
 
+
 def main(path: Path) -> None:
     # Ensure parent directories exist
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -20,15 +21,17 @@ def main(path: Path) -> None:
     path.write_text(key)
     print(f"Secret key written to: {path.resolve()}")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generate a base64-encoded secret key and save it to a file."
     )
     parser.add_argument(
-        "--path", "-p",
+        "--path",
+        "-p",
         type=Path,
         default=Path(".secret"),
-        help="Path to save the secret file (default: .secret)"
+        help="Path to save the secret file (default: .secret)",
     )
     args = parser.parse_args()
 

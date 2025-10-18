@@ -36,6 +36,7 @@ def user_from_token():
 
 def login_required(view_func):
     """Decorator to ensure the user is logged in before accessing a route."""
+
     @wraps(view_func)
     def wrapped_view(*args, **kwargs):
         if not session.get("user_id"):
@@ -48,6 +49,7 @@ def login_required(view_func):
 
 def token_required(view_func):
     """Decorator to ensure the token is valid before accessing an API endpoint."""
+
     @wraps(view_func)
     def wrapped_view(*args, **kwargs):
         auth_header = request.headers.get("Authorization")

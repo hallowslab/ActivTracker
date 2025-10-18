@@ -17,3 +17,8 @@ wheels/
 
 # editors
 .vscode/
+
+#DBs
+db.sqlite3
+*.db
+*.sqlite3

@@ -1,10 +1,116 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from database import db_session
-from auth_helpers import login_required, current_user
 import secrets
 from datetime import datetime, timedelta, timezone
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+import numpy as np
+
+from database import db_session
+from models import Action
+from auth_helpers import login_required, current_user
+from model_helpers import summarize_actions, get_activity_timeseries
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
+
+
+@dashboard_bp.route("/summary")
+@login_required
+def view_summary():
+    user = current_user()
+    assert user is not None
+
+    period = request.args.get("period", "week")  # default to week
+    summary = summarize_actions(user.id, period)
+    labels = list(summary.keys())
+    values = list(summary.values())
+    print(f"LABELS: {labels}, Values: {values}")
+    # data = {"labels": labels, "values": values, "period": period}
+    return render_template("summary.html", labels=labels, values=values, period=period)
+
+@dashboard_bp.route("/overview")
+@login_required
+def overview():
+    user = current_user()
+    assert user is not None
+
+    actions = db_session.query(Action).filter_by(user_id=user.id).all()
+    activity_data = []
+    total_actions = 0
+
+    for action in actions:
+        timeseries = get_activity_timeseries(user.id, action.id, days=30)
+        labels = [entry["date"] for entry in timeseries]
+        values = [entry["delta"] for entry in timeseries]
+        total_actions += sum(values)
+
+        x = np.arange(len(values))
+        y = np.array(values)
+        if len(values) > 1:
+            slope, intercept = np.polyfit(x, y, 1)
+            trend_line = (intercept + slope * x).tolist()
+        else:
+            trend_line = values
+
+        activity_data.append({
+            "name": action.name,
+            "values": values,
+            "trend_line": trend_line,
+            "labels": labels
+        })
+
+    # Simple example of change metric: compare first and last week
+    if len(activity_data) > 0:
+        first_total = sum(sum(a["values"][:7]) for a in activity_data)
+        last_total = sum(sum(a["values"][-7:]) for a in activity_data)
+        trend_change = round(((last_total - first_total) / first_total * 100), 1) if first_total else 0
+    else:
+        trend_change = 0
+
+    return render_template(
+        "dashboard.html",
+        activity_data=activity_data,
+        total_actions=total_actions,
+        period="last 30 days",
+        trend_change=trend_change
+    )
+
+
+@dashboard_bp.route("/summary/activity/<int:action_id>")
+@login_required
+def activity_summary(action_id):
+    user = current_user()
+    assert user is not None
+
+    days = int(request.args.get("days", 30))  # last 30 days by default
+    timeseries = get_activity_timeseries(user.id, action_id, days=days)
+
+    labels = [entry["date"] for entry in timeseries]
+    values = [entry["delta"] for entry in timeseries]
+
+    actions = db_session.query(Action).filter_by(user_id=user.id)
+    action = actions.filter_by(id=action_id, user_id=user.id).first()
+
+    
+
+    x = np.arange(len(values))
+    y = np.array(values)
+    slope, intercept = np.polyfit(x, y, 1)
+    trend_line = (intercept + slope * x).tolist()
+
+    data = {
+        "action": action,
+        "actions": actions.all(),
+        "labels": labels,
+        "_values": values,
+        "days": days,
+        "trend_line": trend_line,
+    }
+    if not action:
+        flash("Action not found", "error")
+        return redirect(url_for("action.list_actions"))
+
+    return render_template(
+        "activity_summary.html",
+        data=data
+    )
 
 
 # Show token page

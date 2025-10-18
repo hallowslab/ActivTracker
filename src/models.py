@@ -44,7 +44,7 @@ class ActivityLog(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     action_id = Column(Integer, ForeignKey("actions.id"), nullable=False)
     timestamp = Column(DateTime, default=datetime.now(timezone.utc))
-    # delta (\(\Delta \)) most commonly means difference or change
+    # delta ▲(ALT+30) most commonly means difference or change
     # Can later be used to track multiple occurences on a single log
     # ActivityLog=DrankWater, Delta=2, Drank 2 cups of water
     delta = mapped_column(Integer, default=1, nullable=False)

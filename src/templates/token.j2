@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-
 {% block title %}API Token{% endblock %}
-
 {% block content %}
-<h1>Your API Token</h1>
-
-{% if token %}
-    <p><strong>Token:</strong> <code>{{ token }}</code></p>
-    <p><strong>Expires at:</strong> {{ expiry.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-{% else %}
-    <p>No token generated yet.</p>
-{% endif %}
-
-<a href="{{ url_for('dashboard.generate_token') }}">Generate New Token</a><br>
-<a href="{{ url_for('action.list_actions') }}">Back to Actions</a>
+    <h1>Your API Token</h1>
+    {% if token %}
+        <p>
+            <strong>Token:</strong> <code>{{ token }}</code>
+        </p>
+        <p>
+            <strong>Expires at:</strong> {{ expiry.strftime("%Y-%m-%d %H:%M:%S") }}
+        </p>
+    {% else %}
+        <p>No token generated yet.</p>
+    {% endif %}
+    <a href="{{ url_for("dashboard.generate_token") }}">Generate New Token</a>
+    <br>
+    <a href="{{ url_for("action.list_actions") }}">Back to Actions</a>
 {% endblock %}

@@ -1,187 +1,43 @@
 {% extends "base.html" %}
 {% block title %}Your Actions{% endblock %}
-
 {% block head %}
-<style>
-/* Container */
-.actions-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.actions-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-/* New Action button */
-.new-action-btn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.2s ease, transform 0.1s;
-}
-.new-action-btn:active {
-  background-color: #45a049;
-  transform: scale(0.97);
-}
-
-/* Action cards list */
-.action-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0;
-  list-style: none;
-}
-
-.action-card {
-  background-color: #fff;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.15);
-  transition: transform 0.1s ease, box-shadow 0.2s;
-}
-.action-card:active {
-  transform: scale(0.98);
-}
-
-/* Title + notes */
-.action-title {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin: 0 0 0.25rem;
-}
-.action-notes {
-  color: #666;
-  font-style: italic;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Action buttons */
-.action-links {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.action-links a {
-  background-color: #f1f1f1;
-  color: #333;
-  padding: 0.4rem 0.7rem;
-  border-radius: 0.4rem;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: background-color 0.15s;
-}
-.action-links a:hover {
-  background-color: #e0e0e0;
-}
-.action-links a:active {
-  background-color: #d5d5d5;
-}
-
-.action-properties {
-  background: #f8f9fa;
-  border-radius: 0.5rem;
-  margin: 0.5rem 0 1rem;
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.action-properties summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #007bff;
-  list-style: none;
-}
-
-.action-properties[open] summary {
-  color: #0056b3;
-}
-
-.action-properties summary::-webkit-details-marker {
-  display: none; /* hides default arrow */
-}
-
-.action-properties summary::after {
-  content: "▾";
-  float: right;
-  transition: transform 0.2s;
-}
-
-.action-properties[open] summary::after {
-  transform: rotate(180deg);
-}
-
-.action-properties ul {
-  list-style: none;
-  padding: 0.5rem 0 0;
-  margin: 0;
-}
-
-.action-properties li {
-  margin-bottom: 0.25em;
-}
-
-/* Empty state */
-.empty-message {
-  text-align: center;
-  color: #666;
-  margin-top: 2rem;
-}
-
-/* Desktop two-column grid */
-@media (min-width: 700px) {
-    .action-list { display: grid; grid-template-columns: 1fr 1fr; }
-}
-</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/actions.css') }}">
 {% endblock %}
-
 {% block content %}
-<div class="actions-header">
-  <h1>Your Actions</h1>
-  <a href="{{ url_for('action.new_action') }}" class="new-action-btn">+ New Action</a>
-</div>
-
-{% if actions %}
-<ul class="action-list">
-  {% for act in actions %}
-  <li class="action-card">
-    <div class="action-title">{{ act.name }}</div>
-    {% if act.notes %}
-    <div class="action-notes">{{ act.notes }}</div>
-    {% endif %}
-    {% if act.properties %}
-    <details class="action-properties">
-      <summary>Properties</summary>
-      <ul>
-        {% for key, value in act.properties.items() %}
-          <li><strong>{{ key|capitalize }}:</strong> {{ value }}</li>
-        {% endfor %}
-      </ul>
-    </details>
-    {% endif %}
-    
-    <div class="action-links">
-      <a href="{{ url_for('action.log_activity', action_id=act.id) }}">Add Log</a>
-      <a href="{{ url_for('action.view_action_history', action_id=act.id) }}">View</a>
-      <a href="{{ url_for('dashboard.activity_summary', action_id=act.id) }}">Graphs</a>
-      <a href="{{ url_for('action.edit_action', action_id=act.id) }}">Edit</a>
+    <div class="actions-header">
+        <h1>Your Actions</h1>
+        <a href="{{ url_for("action.new_action") }}" class="new-action-btn">+ New Action</a>
     </div>
-  </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p class="empty-message">
-  No actions yet. <a href="{{ url_for('action.new_action') }}">Create one</a>.
-</p>
-{% endif %}
+    {% if actions %}
+        <ul class="action-list">
+            {% for act in actions %}
+                <li class="action-card">
+                    <div class="action-title">{{ act.name }}</div>
+                    {% if act.notes %}<div class="action-notes">{{ act.notes }}</div>{% endif %}
+                    {% if act.properties %}
+                        <details class="action-properties">
+                            <summary>Properties</summary>
+                            <ul>
+                                {% for key, value in act.properties.items() %}
+                                    <li>
+                                        <strong>{{ key|capitalize }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </details>
+                    {% endif %}
+                    <div class="action-links">
+                        <a href="{{ url_for('action.log_activity', action_id=act.id) }}">Add Log</a>
+                        <a href="{{ url_for('action.view_action_history', action_id=act.id) }}">View</a>
+                        <a href="{{ url_for('dashboard.activity_summary', action_id=act.id) }}">Graphs</a>
+                        <a href="{{ url_for('action.edit_action', action_id=act.id) }}">Edit</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-message">
+            No actions yet. <a href="{{ url_for("action.new_action") }}">Create one</a>.
+        </p>
+    {% endif %}
 {% endblock %}

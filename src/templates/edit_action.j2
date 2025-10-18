@@ -1,21 +1,26 @@
 {% extends "base.html" %}
-
 {% block title %}Edit Action{% endblock %}
-
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+{% endblock %}
 {% block content %}
-<h1>Edit Action</h1>
-
-<form method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" value="{{ action.name }}" required>
-
-    <label for="notes">Notes:</label>
-    <textarea id="notes" name="notes">{{ action.notes or "" }}</textarea>
-
-    <label for="properties">Properties:</label>
-    <textarea id="properties" name="properties">{{ action.properties or "" }}</textarea>
-
-    <button type="submit">Save Changes</button>
-    <a href="{{ url_for('action.list_actions') }}">Cancel</a>
-</form>
+    <div class="form-container">
+        <h1>Edit Action</h1>
+        <form method="post">
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" value="{{ action.name }}" required>
+            </div>
+            <div>
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes">{{ action.notes or "" }}</textarea>
+            </div>
+            <div>
+                <label for="properties">Properties (JSON)</label>
+                <textarea id="properties" name="properties">{{ action.properties or "" }}</textarea>
+            </div>
+            <button type="submit">Save Changes</button>
+            <a href="{{ url_for("action.list_actions") }}" class="cancel-link">Cancel</a>
+        </form>
+    </div>
 {% endblock %}

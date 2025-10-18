@@ -3,19 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Activity Tracker{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
-        nav a { margin-right: 10px; }
-        ul.flash { list-style: none; padding: 0; }
+        /* --- Global styles --- */
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f1f1f1;
+            padding: 0.5rem 0;
+            border-top: 1px solid #ccc;
+            position: sticky;
+            bottom: 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        nav a:active {
+            color: #4CAF50;
+        }
+
+        main {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        /* Flash messages */
+        ul.flash {
+            list-style: none;
+            padding: 0;
+        }
+
         li.success { color: green; }
         li.error { color: red; }
+
+        /* Buttons */
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            background-color: #45a049;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 600px) {
+            main { padding: 2rem 3rem; }
+        }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
+
+    <header>
+        <h1>{% block header %}Activity Tracker{% endblock %}</h1>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+          {% if messages %}
+            <ul class="flash">
+              {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
 
     <nav>
         <a href="{{ url_for('index') }}">Home</a>
         <a href="{{ url_for('action.list_actions') }}">Actions</a>
+        <a href="{{ url_for('dashboard.view_summary') }}">Summary</a>
+        <a href="{{ url_for('dashboard.overview') }}">Dashboard</a>
         {% if session.get('user_id') %}
             <a href="{{ url_for('auth.logout') }}">Logout</a>
         {% else %}
@@ -24,19 +126,6 @@
         {% endif %}
     </nav>
 
-    <!-- ✅ Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-      {% if messages %}
-        <ul class="flash">
-          {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-
-    <!-- ✅ Main content block -->
-    {% block content %}{% endblock %}
-
+    {% block scripts %}{% endblock %}
 </body>
 </html>

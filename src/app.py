@@ -25,6 +25,7 @@ app.register_blueprint(dashboard_bp)
 # Commands
 app.cli.add_command(create_test_data)
 
+
 @app.route("/")
 @login_required
 def index():
@@ -97,7 +98,7 @@ def init():
     load_dotenv()
     FLASK_ENV: str = os.getenv("FLASK_ENV", "development")
     _DEBUG: bool = True if FLASK_ENV == "development" else False
-    print(F"FLASK_ENV: {FLASK_ENV}, DEBUG: {_DEBUG}")
+    print(f"FLASK_ENV: {FLASK_ENV}, DEBUG: {_DEBUG}")
     app.secret_key = "!DEBUG!"
     if FLASK_ENV == "production":
         try:

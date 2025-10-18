@@ -81,7 +81,7 @@ def log_activity(action_id):
         db_session.commit()
 
         flash(f"Logged new instance for '{action.name}'", "success")
-        return redirect(url_for("action.view_action", action_id=action.id))
+        return redirect(url_for("action.view_action_history", action_id=action.id))
 
     return render_template("log_activity.j2", action=action)
 
@@ -89,7 +89,7 @@ def log_activity(action_id):
 # View action history
 @action_bp.route("/<int:action_id>")
 @login_required
-def view_action(action_id):
+def view_action_history(action_id):
     user = current_user()
     assert user is not None
 
@@ -105,4 +105,4 @@ def view_action(action_id):
         .all()
     )
 
-    return render_template("view_action.j2", action=action, logs=logs)
+    return render_template("view_action_history.j2", action=action, logs=logs)

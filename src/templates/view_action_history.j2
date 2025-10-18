@@ -35,29 +35,65 @@
   overflow-x: auto;
 }
 
+.edit-btn {
+  display: inline-block;
+  background-color: #0d6efd;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+.edit-btn:hover {
+  background-color: #0b5ed7;
+}
 .log-entry {
-  border-bottom: 1px solid #eee;
-  padding: 0.5rem 0;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 0.75em 1em;
+  margin-bottom: 0.75em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.log-entry:last-child {
-  border-bottom: none;
-}
-
 .log-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
+  align-items: center;
+  font-size: 0.9em;
   color: #555;
 }
 
-.log-delta {
-  font-weight: bold;
-  color: #4CAF50;
+.log-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
+.log-delta {
+  color: #198754;
+  font-weight: 600;
+}
 .log-note {
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
+  margin: 0.5em 0;
+  font-style: italic;
+  color: #333;
+}
+
+.edit-btn {
+  background: transparent;
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+  background-color: #0d6efd;
+  color: white;
 }
 
 .action-buttons {
@@ -111,7 +147,10 @@
     <div class="log-entry">
       <div class="log-meta">
         <span>{{ log.timestamp.strftime('%d-%m-%Y %H:%M:%S') }}</span>
-        <span class="log-delta">▲{{ log.delta }}</span>
+        <div class="log-actions">
+          <span class="log-delta">▲{{ log.delta }}</span>
+          <a href="{{ url_for('action.edit_activity', log_id=log.id) }}" class="edit-btn">Edit</a>
+        </div>
       </div>
 
       {% if log.note %}

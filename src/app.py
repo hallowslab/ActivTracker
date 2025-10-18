@@ -8,20 +8,25 @@ from routes.auth import auth_bp
 from routes.actions import action_bp
 from routes.api import api_bp
 from routes.dashboard import dashboard_bp
+from models import User
 from database import db_session
+from cli import create_test_data
 
 app = Flask(__name__)
 app.secret_key = None
 
+# Blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(action_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(dashboard_bp)
 
+# Commands
+app.cli.add_command(create_test_data)
 
 @app.route("/")
 def index():
-    return render_template("index.html", user=current_user())
+    return render_template("index.j2", user=current_user())
 
 
 @app.teardown_appcontext

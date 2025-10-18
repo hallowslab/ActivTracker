@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 
 # SQLite database in current directory
-engine = create_engine("sqlite:///tracker.db", echo=False)
+engine = create_engine("sqlite:///tracker.sqlite3", echo=False)
 
 # Scoped session for thread safety (Flask can reuse this later)
 db_session = scoped_session(
@@ -15,12 +15,8 @@ Base.query = db_session.query_property()
 
 
 def init_db():
-    """Import all models and create database tables."""
-    import models  # ensure models are imported before create_all()
+    """Create all tables for models that have been imported."""
+    import models  # must be after Base is defined
 
     Base.metadata.create_all(bind=engine)
-    print("Database initialized at tracker.db")
-
-
-if __name__ == "__main__":
-    init_db()
+    print("Database initialized at tracker.sqlite3")

@@ -28,7 +28,7 @@ def register():
         db_session.commit()
         flash("Registered! Log in now.")
         return redirect(url_for("auth.login"))
-    return render_template("register.html")
+    return render_template("register.j2")
 
 
 # Login route
@@ -44,7 +44,7 @@ def login():
             return redirect(url_for("index"))
         flash("Invalid credentials")
         return redirect(url_for("auth.login"))
-    return render_template("login.html")
+    return render_template("login.j2")
 
 
 # Logout route

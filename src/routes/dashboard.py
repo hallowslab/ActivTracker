@@ -23,7 +23,7 @@ def view_summary():
     values = list(summary.values())
     print(f"LABELS: {labels}, Values: {values}")
     # data = {"labels": labels, "values": values, "period": period}
-    return render_template("summary.html", labels=labels, values=values, period=period)
+    return render_template("summary.j2", labels=labels, values=values, period=period)
 
 @dashboard_bp.route("/overview")
 @login_required
@@ -65,7 +65,7 @@ def overview():
         trend_change = 0
 
     return render_template(
-        "dashboard.html",
+        "dashboard.j2",
         activity_data=activity_data,
         total_actions=total_actions,
         period="last 30 days",
@@ -108,7 +108,7 @@ def activity_summary(action_id):
         return redirect(url_for("action.list_actions"))
 
     return render_template(
-        "activity_summary.html",
+        "activity_summary.j2",
         data=data
     )
 
@@ -122,7 +122,7 @@ def show_token():
 
     token = user.api_token
     expiry = user.token_expiry
-    return render_template("token.html", token=token, expiry=expiry)
+    return render_template("token.j2", token=token, expiry=expiry)
 
 
 # Generate a new token

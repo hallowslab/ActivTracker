@@ -16,7 +16,7 @@ def list_actions():
     assert user is not None  # For type checking safety
 
     actions = db_session.query(Action).filter_by(user_id=user.id).all()
-    return render_template("actions.html", actions=actions)
+    return render_template("actions.j2", actions=actions)
 
 
 # Create a new action
@@ -44,7 +44,7 @@ def new_action():
         flash(f"Action '{name}' created successfully!", "success")
         return redirect(url_for("action.list_actions"))
 
-    return render_template("new_action.html")
+    return render_template("new_action.j2")
 
 
 # Increment action (add log)
@@ -83,7 +83,7 @@ def log_activity(action_id):
         flash(f"Logged new instance for '{action.name}'", "success")
         return redirect(url_for("action.view_action", action_id=action.id))
 
-    return render_template("log_activity.html", action=action)
+    return render_template("log_activity.j2", action=action)
 
 
 # View action history
@@ -105,4 +105,4 @@ def view_action(action_id):
         .all()
     )
 
-    return render_template("view_action.html", action=action, logs=logs)
+    return render_template("view_action.j2", action=action, logs=logs)

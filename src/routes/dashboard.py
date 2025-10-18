@@ -25,53 +25,6 @@ def view_summary():
     # data = {"labels": labels, "values": values, "period": period}
     return render_template("summary.j2", labels=labels, values=values, period=period)
 
-@dashboard_bp.route("/overview")
-@login_required
-def overview():
-    user = current_user()
-    assert user is not None
-
-    actions = db_session.query(Action).filter_by(user_id=user.id).all()
-    activity_data = []
-    total_actions = 0
-
-    for action in actions:
-        timeseries = get_activity_timeseries(user.id, action.id, days=30)
-        labels = [entry["date"] for entry in timeseries]
-        values = [entry["delta"] for entry in timeseries]
-        total_actions += sum(values)
-
-        x = np.arange(len(values))
-        y = np.array(values)
-        if len(values) > 1:
-            slope, intercept = np.polyfit(x, y, 1)
-            trend_line = (intercept + slope * x).tolist()
-        else:
-            trend_line = values
-
-        activity_data.append({
-            "name": action.name,
-            "values": values,
-            "trend_line": trend_line,
-            "labels": labels
-        })
-
-    # Simple example of change metric: compare first and last week
-    if len(activity_data) > 0:
-        first_total = sum(sum(a["values"][:7]) for a in activity_data)
-        last_total = sum(sum(a["values"][-7:]) for a in activity_data)
-        trend_change = round(((last_total - first_total) / first_total * 100), 1) if first_total else 0
-    else:
-        trend_change = 0
-
-    return render_template(
-        "dashboard.j2",
-        activity_data=activity_data,
-        total_actions=total_actions,
-        period="last 30 days",
-        trend_change=trend_change
-    )
-
 
 @dashboard_bp.route("/summary/activity/<int:action_id>")
 @login_required
@@ -87,8 +40,6 @@ def activity_summary(action_id):
 
     actions = db_session.query(Action).filter_by(user_id=user.id)
     action = actions.filter_by(id=action_id, user_id=user.id).first()
-
-    
 
     x = np.arange(len(values))
     y = np.array(values)
@@ -107,10 +58,7 @@ def activity_summary(action_id):
         flash("Action not found", "error")
         return redirect(url_for("action.list_actions"))
 
-    return render_template(
-        "activity_summary.j2",
-        data=data
-    )
+    return render_template("activity_summary.j2", data=data)
 
 
 # Show token page

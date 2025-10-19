@@ -74,11 +74,7 @@ nav a {
     transition: background 0.15s;
 }
 
-nav a:hover {
-    background-color: var(--primary);
-    color: #fff;
-}
-
+nav a:hover,
 nav a:active {
     background-color: var(--primary);
     color: #fff;
@@ -100,7 +96,7 @@ li.error {
 }
 
 li.warning {
-    color: var(--danger);
+    color: var(--warning);
 }
 
 /* --- Buttons --- */
@@ -169,7 +165,7 @@ select:focus {
 
 .auth-page nav a {
     color: gray;
-    /* white links to contrast gradient */
+    /* gray links to contrast gradient */
 }
 
 .auth-page nav a:hover {
@@ -196,10 +192,6 @@ select:focus {
         margin: auto;
         width: 80%;
         max-width: 100%;
-    }
-
-    .summary-card {
-        width: 100% !important;
     }
 
     .content-wrapper {

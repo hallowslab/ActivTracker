@@ -43,7 +43,7 @@ def generate_fake_data(user_id: int, num_actions: int = 3, days: int = 30):
     for action in actions:
         for day in range(days):
             ts = datetime.now(timezone.utc) - timedelta(days=day)
-            delta = random.randint(-15, 25)  # -5|+5 increments per day
+            delta = random.randint(-750, 1000)  # -5|+5 increments per day
             log = ActivityLog(
                 action_id=action.id,
                 timestamp=ts,

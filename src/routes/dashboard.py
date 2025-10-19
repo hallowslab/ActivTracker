@@ -19,21 +19,26 @@ def index():
     assert user is not None
 
     form = TimeframeForm()
+    days = 30  # default
 
-    # Default days
-    days = 30
-
-    if form.validate_on_submit():
+    if request.method == "POST" and form.validate_on_submit():
+        # POST: trust validated form value
         days = form.days.data
-    elif request.method == "GET":
-        # Pre-fill form from query param if provided
-        try:
-            days_param = int(request.args.get("days", 30))
-            if 7 <= days_param <= 90:
-                days = days_param
-        except ValueError:
-            pass
-        form.days.data = days
+    else:
+        # GET: try to prefill from query param, but cast safely
+        days_arg = request.args.get("days")
+        if days_arg is not None:
+            try:
+                # cast to int before assigning to form field
+                form.days.data = int(days_arg)
+            except ValueError:
+                # invalid int, ignore and keep default
+                form.days.data = days
+
+        if form.validate():
+            days = form.days.data
+        else:
+            form.days.data = days
 
     actions = db_session.query(Action).filter_by(user_id=user.id).all()
     activity_data = []
@@ -70,11 +75,15 @@ def index():
         # accumulate for summary
         summary_counts[action.name] = sum(values)
 
-    # compute simple trend change
-    if len(activity_data) > 0:
+    # compute trend change
+    if activity_data:
         first_total = sum(sum(a["values"][:7]) for a in activity_data)
         last_total = sum(sum(a["values"][-7:]) for a in activity_data)
-        trend_change = round(((last_total - first_total) / first_total * 100), 1) if first_total else 0
+        trend_change = (
+            round(((last_total - first_total) / first_total * 100), 1)
+            if first_total
+            else 0
+        )
     else:
         trend_change = 0
 
@@ -90,8 +99,9 @@ def index():
         trend_change=trend_change,
         labels=summary_labels,
         values=summary_values,
-        form=form
+        form=form,
     )
+
 
 @dashboard_bp.route("/summary/activity", methods=["GET", "POST"])
 @login_required
@@ -104,7 +114,7 @@ def activity_summary():
         flash("No actions found", "error")
         return redirect(url_for("action.list_actions"))
 
-    form = ActivitySummaryForm(request.args)  # Handle GET params
+    form = ActivitySummaryForm(request.values)  # Handle GET|POST params
 
     # Populate select choices dynamically
     form.action_id.choices = [(a.id, a.name) for a in actions]

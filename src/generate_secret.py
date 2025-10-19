@@ -3,11 +3,11 @@
 # dependencies = []
 # ///
 
-import secrets
-import base64
-from pathlib import Path
 import argparse
+import base64
+import secrets
 import sys
+from pathlib import Path
 
 
 def main(path: Path) -> None:

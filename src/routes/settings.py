@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from auth_helpers import login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, flash, redirect, render_template, session, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import User
+from auth_helpers import current_user, login_required
 from database import db_session
 from forms import ChangePasswordForm, DeleteAccountForm
+from models import User
 
 settings_bp = Blueprint("settings", __name__, url_prefix="/settings")
 

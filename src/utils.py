@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta, timezone
-from database import db_session
-from models import Action, ActivityLog, User
 import random
+from datetime import datetime, timedelta, timezone
+
+from database import db_session
+from models import Action, ActivityLog
 
 
 def generate_fake_data(user_id: int, num_actions: int = 3, days: int = 30):

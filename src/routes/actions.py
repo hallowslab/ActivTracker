@@ -1,10 +1,12 @@
 import json
 from datetime import datetime, timezone
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from models import Action, ActivityLog
+
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
+from auth_helpers import current_user, login_required
 from database import db_session
-from auth_helpers import login_required, current_user
 from forms import EditActionForm, EditActivityForm, LogActivityForm, NewActionForm
+from models import Action, ActivityLog
 
 action_bp = Blueprint("action", __name__, url_prefix="/actions")
 

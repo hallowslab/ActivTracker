@@ -1,14 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    SelectField,
-    IntegerField,
-    SubmitField,
-    StringField,
-    TextAreaField,
     HiddenField,
+    IntegerField,
     PasswordField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TextAreaField,
 )
-from wtforms.validators import NumberRange, DataRequired, EqualTo, ValidationError
+from wtforms.validators import DataRequired, EqualTo, NumberRange, ValidationError
 
 from auth_helpers import current_user
 from database import db_session

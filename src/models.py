@@ -1,15 +1,17 @@
 # models.py
 from datetime import datetime, timezone
+
 from sqlalchemy import (
+    JSON,
     Column,
-    Integer,
-    String,
     DateTime,
     ForeignKey,
-    JSON,
+    Integer,
+    String,
     UniqueConstraint,
 )
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from database import Base
 
 

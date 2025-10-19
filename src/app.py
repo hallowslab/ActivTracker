@@ -1,17 +1,16 @@
 import os
 from pathlib import Path
-from flask import Flask
-from dotenv import load_dotenv
 
-from routes.auth import auth_bp
+from dotenv import load_dotenv
+from flask import Flask
+
+from cli import collect_static, create_test_data
+from database import db_session
 from routes.actions import action_bp
 from routes.api import api_bp
+from routes.auth import auth_bp
 from routes.dashboard import dashboard_bp
 from routes.settings import settings_bp
-from models import Action
-from database import db_session
-from forms import TimeframeForm
-from cli import create_test_data, collect_static
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 

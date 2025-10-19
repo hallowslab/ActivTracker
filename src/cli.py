@@ -1,7 +1,8 @@
 # cli.py
-import click
 import os
 import shutil
+
+import click
 
 from database import db_session
 from models import User

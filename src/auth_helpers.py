@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 from functools import wraps
-from flask import session, redirect, url_for, flash, request, jsonify
-from models import User
+
+from flask import flash, jsonify, redirect, request, session, url_for
+
 from database import db_session
+from models import User
 
 
 def current_user():

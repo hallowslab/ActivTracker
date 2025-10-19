@@ -1,13 +1,14 @@
 import secrets
 from datetime import datetime, timedelta, timezone
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-import numpy as np
 
+import numpy as np
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
+from auth_helpers import current_user, login_required
 from database import db_session
-from models import Action
-from auth_helpers import login_required, current_user
-from model_helpers import get_activity_timeseries
 from forms import ActivitySummaryForm, TimeframeForm
+from model_helpers import get_activity_timeseries
+from models import Action
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 

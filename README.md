@@ -64,7 +64,7 @@ uv run python create_db.py
 </code>
 
 ### 4. Configure .env
-- Create a file named .env inside src from the template .env.template and modify the variables 
+- Create a file named .env inside src from the template .env.template and modify the variables
   - FLASK_ENV="development" - set to "production"
   - STATIC_ROOT=/var/www/activ/static - set to the root of where you will serve static assets with nginx
 

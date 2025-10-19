@@ -23,18 +23,33 @@ def create_test_data(username, actions=3, days=30):
 
 @click.command("collect-static")
 def collect_static():
-    """Copy static files to the STATIC_ROOT directory."""
+    """Copy static files to the STATIC_ROOT directory safely."""
     source_dir = os.path.join(os.path.dirname(__file__), "static")
-    target_dir = os.environ.get("STATIC_ROOT", "/var/www/activ/static")
+    target_dir = os.environ.get("STATIC_ROOT")
 
     if not target_dir:
         click.echo("Error: STATIC_ROOT environment variable not set")
         return
 
-    if os.path.exists(target_dir):
-        click.echo(f"Removing existing files in {target_dir}")
-        shutil.rmtree(target_dir)
+    # Ensure target directory exists
+    os.makedirs(target_dir, exist_ok=True)
 
     click.echo(f"Copying static files from {source_dir} to {target_dir}")
-    shutil.copytree(source_dir, target_dir)
-    click.echo("Static files copied successfully!")
+
+    # Walk source directory and copy files individually
+    for root, _, files in os.walk(source_dir):
+        for f in files:
+            src_file = os.path.join(root, f)
+            rel_path = os.path.relpath(src_file, source_dir)
+            dst_file = os.path.join(target_dir, rel_path)
+
+            # Ensure parent directory exists
+            os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+
+            try:
+                shutil.copy2(src_file, dst_file)
+                click.echo(f"Copied {rel_path}")
+            except PermissionError:
+                click.echo(f"Skipped {rel_path} (permission denied)")
+
+    click.echo("Static files collection complete!")

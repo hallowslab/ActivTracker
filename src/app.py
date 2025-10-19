@@ -3,6 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask
+from flask_wtf.csrf import CSRFProtect
 
 from cli import collect_static, create_test_data
 from database import db_session
@@ -13,6 +14,7 @@ from routes.dashboard import dashboard_bp
 from routes.settings import settings_bp
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
+csrf = CSRFProtect()
 
 FLASK_ENV: str = os.getenv("FLASK_ENV", "development")
 _DEBUG: bool = True if FLASK_ENV == "development" else False
@@ -53,6 +55,7 @@ def init():
         except:
             raise RuntimeError("Secret key file missing in production")
     print(f"SECRET: {app.secret_key}")
+    csrf.init_app(app=app)
     return app
 
 

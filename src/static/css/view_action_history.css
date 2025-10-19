@@ -17,7 +17,6 @@
     font-size: 0.95rem;
 }
 
-.properties-box,
 .logs-list {
     background: #fff;
     width: 60%;
@@ -25,13 +24,6 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     padding: 1rem;
     margin-bottom: 1rem;
-}
-
-.properties-box pre {
-    background: #f8f8f8;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    overflow-x: auto;
 }
 
 .edit-btn {

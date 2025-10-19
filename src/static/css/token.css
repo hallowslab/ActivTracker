@@ -1,16 +1,8 @@
-.token-container {
+.card.token {
     max-width: 500px;
     margin: 2rem auto;
-    background: #fff;
     padding: 2rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     text-align: center;
-}
-
-.token-container h1 {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
 }
 
 .token-value {
@@ -18,6 +10,7 @@
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     overflow-x: auto;
+    word-break: break-all;
     font-family: monospace;
     margin: 0.5rem 0;
 }
@@ -30,33 +23,8 @@
     gap: 0.5rem;
 }
 
-/* Use same button classes from base.css */
-.btn {
-    padding: 0.6rem 1rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-}
-.btn-primary {
-    background-color: var(--primary);
-    color: #fff;
-}
-.btn-primary:hover {
-    background-color: color-mix(in srgb, var(--primary) 90%, black);
-}
-.btn-secondary {
-    background-color: var(--secondary);
-    color: var(--text);
-}
-.btn-secondary:hover {
-    background-color: var(--primary);
-    color: #fff;
-}
-
 @media (max-width: 600px) {
-    .token-container {
+    .card.token {
         margin: 1rem;
         padding: 1.5rem;
     }

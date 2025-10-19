@@ -10,6 +10,7 @@ from routes.auth import auth_bp
 from routes.actions import action_bp
 from routes.api import api_bp
 from routes.dashboard import dashboard_bp
+from routes.settings import settings_bp
 from models import Action
 from database import db_session
 from cli import create_test_data, collect_static
@@ -24,6 +25,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(action_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(dashboard_bp)
+app.register_blueprint(settings_bp)
 
 # Commands
 app.cli.add_command(create_test_data)

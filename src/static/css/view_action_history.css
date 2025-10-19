@@ -88,8 +88,39 @@
     color: #333;
 }
 
+.btn {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.85em;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.btn-info {
+    background-color: var(--info);
+}
+
+.btn-info:hover {
+    background-color: #0b5ed7;
+}
+
 .btn-danger {
-    background-color: red;
+    background-color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
 }
 
 .action-buttons {

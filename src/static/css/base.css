@@ -3,6 +3,8 @@
     --primary: #2F9C95;
     --secondary: #E0E0E0;
     --danger: #E53935;
+    --warning: #FFB300;
+    --info: #0d6efd;
     --background: #FAFAFA;
     --text: #212121;
     --header-bg: var(--primary);
@@ -44,11 +46,11 @@ main {
 }
 
 .content-wrapper {
-    width: 80%;           /* optional: restrict if you want max width */
+    width: 80%;
     margin: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;   /* <-- centers all block-level children horizontally */
+    align-items: center;
 }
 
 /* --- Navigation --- */
@@ -81,6 +83,7 @@ ul.flash {
 }
 li.success { color: var(--primary); }
 li.error { color: var(--danger); }
+li.warning { color: var(--danger); }
 
 /* --- Buttons --- */
 button,

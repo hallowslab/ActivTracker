@@ -1,31 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Log {{ action.name }}{% endblock %}
+{% block title %}
+    Log {{ action.name }}
+{% endblock title %}
 {% block content %}
     <div class="form-container">
         <h1>Log Activity for {{ action.name }}</h1>
         <form method="post">
-        {{ form.csrf_token }}
-        <div>
-            {{ form.delta.label }}
-            {{ form.delta(class="input-number") }}
-            {% if form.delta.errors %}
-                <div class="error">{{ form.delta.errors[0] }}</div>
-            {% endif %}
-        </div>
-        <div>
-            {{ form.notes.label }}
-            {{ form.notes(rows="3", class="input-textarea") }}
-        </div>
-        <div>
-            {{ form.properties.label }}
-            {{ form.properties(rows="6", class="input-textarea") }}
-        </div>
-        <div class="actions">
-            {{ form.submit(class="btn btn-primary") }}
-            <a href="{{ url_for('action.view_action_history', action_id=action.id) }}" class="btn btn-secondary">Cancel</a>
-        </div>
+            {{ form.csrf_token }}
+            <div>
+                {{ form.delta.label }}
+                {{ form.delta(class="input-number") }}
+                {% if form.delta.errors %}<div class="error">{{ form.delta.errors[0] }}</div>{% endif %}
+            </div>
+            <div>
+                {{ form.notes.label }}
+                {{ form.notes(rows="3", class="input-textarea") }}
+            </div>
+            <div>
+                {{ form.properties.label }}
+                {{ form.properties(rows="6", class="input-textarea") }}
+            </div>
+            <div class="actions">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('action.view_action_history', action_id=action.id) }}"
+                   class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
         <a href="{{ url_for('action.view_action_history', action_id=action.id) }}"
            class="cancel-link">← Back to {{ action.name }}</a>
     </div>
-{% endblock %}
+{% endblock content %}

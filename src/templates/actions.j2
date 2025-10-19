@@ -1,13 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Your Actions{% endblock %}
+{% block title %}
+    Your Actions
+{% endblock title %}
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/actions.css') }}">
-{% endblock %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/actions.css') }}">
+{% endblock head %}
 {% block content %}
     <div class="actions-header">
         <h1>Your Actions</h1>
     </div>
-    <a href="{{ url_for("action.new_action") }}" class="btn btn-primary">+ New Action</a>
+    <a href="{{ url_for('action.new_action') }}" class="btn btn-primary">+ New Action</a>
     {% if actions %}
         <ul class="action-list">
             {% for act in actions %}
@@ -17,16 +20,16 @@
                     </div>
                     {% if act.notes %}<div class="action-notes">{{ act.notes }}</div>{% endif %}
                     {% if act.properties %}
-                    <details class="properties">
-                        <summary>Properties</summary>
-                        <ul>
-                            {% for key, value in act.properties.items() %}
-                                <li>
-                                    <strong>{{ key|capitalize }}:</strong> {{ value }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </details>
+                        <details class="properties">
+                            <summary>Properties</summary>
+                            <ul>
+                                {% for key, value in act.properties.items() %}
+                                    <li>
+                                        <strong>{{ key|capitalize }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </details>
                     {% endif %}
                     <div class="action-links">
                         <a class="btn btn-secondary"
@@ -44,7 +47,7 @@
         </ul>
     {% else %}
         <p class="empty-message">
-            No actions yet. <a href="{{ url_for("action.new_action") }}">Create one</a>.
+            No actions yet. <a href="{{ url_for('action.new_action') }}">Create one</a>.
         </p>
     {% endif %}
     <script>
@@ -60,4 +63,4 @@ async function deleteAction(actionId) {
     else { alert(data.error); }
 }
     </script>
-{% endblock %}
+{% endblock content %}

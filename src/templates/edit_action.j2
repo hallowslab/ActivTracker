@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Edit Action{% endblock %}
+{% block title %}
+    Edit Action
+{% endblock title %}
 {% block content %}
     <div class="form-container">
         <h1>Edit Action</h1>
@@ -8,9 +10,7 @@
             <div>
                 {{ form.name.label }}
                 {{ form.name(class="input-text") }}
-                {% if form.name.errors %}
-                    <div class="error">{{ form.name.errors[0] }}</div>
-                {% endif %}
+                {% if form.name.errors %}<div class="error">{{ form.name.errors[0] }}</div>{% endif %}
             </div>
             <div>
                 {{ form.notes.label }}
@@ -26,4 +26,4 @@
             </div>
         </form>
     </div>
-{% endblock %}
+{% endblock content %}

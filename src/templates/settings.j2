@@ -1,58 +1,47 @@
 {% extends "base.html" %}
-{% block title %}Account Settings{% endblock %}
+{% block title %}
+    Account Settings
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/settings.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
-<div class="form-container card settings-card">
-    <h1>Account Settings</h1>
-
-    <section class="form-section">
-        <h2>Change Password</h2>
-        <form method="post">
-            {{ change_form.csrf_token }}
-            <div class="form-group">
-                {{ change_form.old_password.label }}
-                {{ change_form.old_password(class="auth-input", autocomplete="current-password") }}
-            </div>
-            <div class="form-group">
-                {{ change_form.new_password.label }}
-                {{ change_form.new_password(class="auth-input", autocomplete="new-password") }}
-            </div>
-            <div class="form-group">
-                {{ change_form.confirm_password.label }}
-                {{ change_form.confirm_password(class="auth-input", autocomplete="new-password") }}
-            </div>
-            <div class="form-group">
-                {{ change_form.submit(class="btn btn-primary btn-full") }}
-            </div>
-        </form>
-    </section>
-
-    <hr class="section-divider">
-
-    <section class="form-section">
-    <h2>Delete Account</h2>
-    <form method="post"
-          onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-        {{ delete_form.hidden_tag() }}
-        {{ delete_form.csrf_token }}
-
-        <div class="form-group">
-            {{ delete_form.password.label }}
-            {{ delete_form.password(class="auth-input", autocomplete="current-password") }}
-            {% for error in delete_form.password.errors %}
-                <span class="error">{{ error }}</span>
-            {% endfor %}
-        </div>
-
-        <div class="form-group">
-            {{ delete_form.submit(class="btn btn-danger btn-full") }}
-        </div>
-    </form>
-</section>
-
-</div>
-
-{% endblock %}
+    <div class="form-container card settings-card">
+        <h1>Account Settings</h1>
+        <section class="form-section">
+            <h2>Change Password</h2>
+            <form method="post">
+                {{ change_form.csrf_token }}
+                <div class="form-group">
+                    {{ change_form.old_password.label }}
+                    {{ change_form.old_password(class="auth-input", autocomplete="current-password") }}
+                </div>
+                <div class="form-group">
+                    {{ change_form.new_password.label }}
+                    {{ change_form.new_password(class="auth-input", autocomplete="new-password") }}
+                </div>
+                <div class="form-group">
+                    {{ change_form.confirm_password.label }}
+                    {{ change_form.confirm_password(class="auth-input", autocomplete="new-password") }}
+                </div>
+                <div class="form-group">{{ change_form.submit(class="btn btn-primary btn-full") }}</div>
+            </form>
+        </section>
+        <hr class="section-divider">
+        <section class="form-section">
+            <h2>Delete Account</h2>
+            <form method="post"
+                  onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+                {{ delete_form.hidden_tag() }}
+                {{ delete_form.csrf_token }}
+                <div class="form-group">
+                    {{ delete_form.password.label }}
+                    {{ delete_form.password(class="auth-input", autocomplete="current-password") }}
+                    {% for error in delete_form.password.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                </div>
+                <div class="form-group">{{ delete_form.submit(class="btn btn-danger btn-full") }}</div>
+            </form>
+        </section>
+    </div>
+{% endblock content %}

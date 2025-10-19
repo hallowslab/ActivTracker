@@ -1,9 +1,11 @@
 {% extends "base.html" %}
-{% block title %}{{ action.name }} - Activity Details{% endblock %}
+{% block title %}
+    {{ action.name }} - Activity Details
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/view_action_history.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
     <div class="action-header">
         <h1>{{ action.name }}</h1>
@@ -11,20 +13,20 @@
     </div>
     <div class="action-buttons">
         <a href="{{ url_for('action.log_activity', action_id=action.id) }}">Add Log</a>
-        <a href="{{ url_for("action.list_actions") }}" class="secondary">← Back</a>
+        <a href="{{ url_for('action.list_actions') }}" class="secondary">← Back</a>
         <button class="btn btn-danger" onclick="deleteAction({{ action.id }})">Delete Action</button>
     </div>
     {% if action.properties %}
-    <details class="properties">
-        <summary>General Properties</summary>
-        <ul>
-            {% for key, value in action.properties.items() %}
-            <li>
-                <strong>{{ key|capitalize }}:</strong> {{ value }}
-            </li>
-            {% endfor %}
-        </ul>
-    </details>
+        <details class="properties">
+            <summary>General Properties</summary>
+            <ul>
+                {% for key, value in action.properties.items() %}
+                    <li>
+                        <strong>{{ key|capitalize }}:</strong> {{ value }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </details>
     {% endif %}
     <h2>Recent Logs</h2>
     <div class="logs-list">
@@ -36,7 +38,7 @@
                         <div class="log-actions">
                             <span class="log-delta">▲{{ log.delta }}</span>
                             <button class="btn btn-sm btn-info"
-                                    onclick="window.location.href='{{ url_for('action.edit_activity', log_id=log.id) }}'">
+                                    onclick="window.location.href='{{ url_for("action.edit_activity", log_id=log.id) }}'">
                                 Edit
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="deleteLog({{ log.id }})">Delete</button>
@@ -87,4 +89,4 @@ async function deleteLog(logId) {
     }
 }
     </script>
-{% endblock %}
+{% endblock content %}

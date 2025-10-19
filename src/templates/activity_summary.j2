@@ -1,9 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Activity Summary{% endblock %}
+{% block title %}
+    Activity Summary
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/summary.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
     <div class="card summary">
         <h1>{{ data.action.name }} - Last {{ data.days }} days</h1>
@@ -17,12 +19,10 @@
                 {{ form.days.label }}
                 {{ form.days(min="1", max="365") }}
             </div>
-            <div>
-                {{ form.submit(class="btn btn-primary") }}
-            </div>
+            <div>{{ form.submit(class="btn btn-primary") }}</div>
         </form>
         <canvas id="activityChart"></canvas>
-        <a href="{{ url_for("action.list_actions") }}"
+        <a href="{{ url_for('action.list_actions') }}"
            class="btn btn-secondary back-link">← Back</a>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
@@ -67,4 +67,4 @@
             }
         });
     </script>
-{% endblock %}
+{% endblock content %}

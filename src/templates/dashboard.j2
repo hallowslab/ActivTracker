@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}
+    Dashboard
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/dashboard.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
     <form method="post" class="timeframe-form">
         {{ form.csrf_token }}
         <label for="days">{{ form.days.label }}</label>
         {{ form.days(size=3) }}
         {{ form.submit() }}
-        {% for error in form.days.errors %}
-            <span class="error">{{ error }}</span>
-        {% endfor %}
+        {% for error in form.days.errors %}<span class="error">{{ error }}</span>{% endfor %}
     </form>
     <div class="dashboard-container">
         <!-- Summary Card -->
@@ -45,7 +45,7 @@
             {% endfor %}
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script>
@@ -117,4 +117,4 @@ activityData.forEach((activity, index) => {
     });
 });
     </script>
-{% endblock %}
+{% endblock scripts %}

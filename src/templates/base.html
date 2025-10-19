@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>
-        {% block title %}Activity Tracker{% endblock %}
+        {% block title %}Activity Tracker{% endblock title %}
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
@@ -14,13 +14,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alerts.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/properties.css') }}">
-    {% block head %}{% endblock %}
+    {% block head %}{% endblock head %}
 </head>
 
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock body_class %}">
     <header>
         <h1>
-            {% block header %}Activity Tracker{% endblock %}
+            {% block header %}Activity Tracker{% endblock header %}
         </h1>
     </header>
     <main>
@@ -34,7 +34,7 @@
 
         <!-- Wrap all template content in a centering div -->
         <div class="content-wrapper">
-            {% block content %}{% endblock %}
+            {% block content %}{% endblock content %}
         </div>
     </main>
     <nav>
@@ -49,7 +49,7 @@
         <a href="{{ url_for("auth.register") }}">Register</a>
         {% endif %}
     </nav>
-    {% block scripts %}{% endblock %}
+    {% block scripts %}{% endblock scripts %}
 </body>
 
 </html>

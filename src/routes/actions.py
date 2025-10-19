@@ -111,7 +111,7 @@ def edit_activity(log_id):
 
     if form.validate_on_submit():
         assert form.delta.data is not None
-        log.delta = float(form.delta.data)
+        log.delta = form.delta.data
         log.notes = form.notes.data or ""
 
         properties_raw = form.properties.data or "{}"
@@ -148,7 +148,7 @@ def log_activity(action_id):
         flash("Action not found", "error")
         return redirect(url_for("action.list_actions"))
 
-    form = LogActivityForm(obj=ActivityLog)
+    form = LogActivityForm()
 
     if form.validate_on_submit():
         assert form.delta.data is not None

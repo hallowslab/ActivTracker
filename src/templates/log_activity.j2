@@ -7,7 +7,7 @@
         {{ form.csrf_token }}
         <div>
             {{ form.delta.label }}
-            {{ form.delta(step="any", class="input-number") }}
+            {{ form.delta(class="input-number") }}
             {% if form.delta.errors %}
                 <div class="error">{{ form.delta.errors[0] }}</div>
             {% endif %}

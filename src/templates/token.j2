@@ -1,18 +1,27 @@
 {% extends "base.html" %}
 {% block title %}API Token{% endblock %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/token.css') }}">
+{% endblock %}
 {% block content %}
-    <h1>Your API Token</h1>
-    {% if token %}
-        <p>
-            <strong>Token:</strong> <code>{{ token }}</code>
-        </p>
-        <p>
-            <strong>Expires at:</strong> {{ expiry.strftime("%Y-%m-%d %H:%M:%S") }}
-        </p>
-    {% else %}
-        <p>No token generated yet.</p>
-    {% endif %}
-    <a href="{{ url_for("dashboard.generate_token") }}">Generate New Token</a>
-    <br>
-    <a href="{{ url_for("action.list_actions") }}">Back to Actions</a>
+    <div class="token-container">
+        <h1>Your API Token</h1>
+        {% if token %}
+            <p>
+                <strong>Token:</strong>
+            </p>
+            <pre class="token-value">{{ token }}</pre>
+            <p>
+                <strong>Expires at:</strong> {{ expiry.strftime("%Y-%m-%d %H:%M:%S") }}
+            </p>
+        {% else %}
+            <p>No token generated yet.</p>
+        {% endif %}
+        <div class="token-buttons">
+            <a href="{{ url_for("dashboard.generate_token") }}"
+               class="btn btn-primary">Generate New Token</a>
+            <a href="{{ url_for("action.list_actions") }}" class="btn btn-secondary">Back to Actions</a>
+        </div>
+    </div>
 {% endblock %}

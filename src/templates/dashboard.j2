@@ -5,7 +5,7 @@
           href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 {% block content %}
-    <div id="summary" class="summary-card">
+    <div id="summary" class="card summary">
         <h3>Summary</h3>
         <ul>
             <li>
@@ -24,7 +24,7 @@
     <h2>All Activity Trends</h2>
     <div class="activity-list">
         {% for activity in activity_data %}
-            <div class="activity-card">
+            <div class="card activity">
                 <h3>{{ activity.name }}</h3>
                 <canvas id="chart-{{ loop.index0 }}"></canvas>
             </div>

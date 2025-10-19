@@ -5,30 +5,36 @@
           href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 {% block content %}
-    <div id="summary" class="card summary">
-        <h3>Summary</h3>
-        <ul>
-            <li>
-                <strong>{{ activity_data|length }}</strong> activities tracked
-            </li>
-            <li>
-                <strong>{{ total_actions }}</strong> total actions ({{ period }})
-            </li>
-            <li>
-                <strong>{{ trend_change }}%</strong> change vs last period
-            </li>
-        </ul>
-        <!-- Chart canvas for summary counts -->
-        <canvas id="summaryChart"></canvas>
-    </div>
-    <h2>All Activity Trends</h2>
-    <div class="activity-list">
-        {% for activity in activity_data %}
-            <div class="card activity">
-                <h3>{{ activity.name }}</h3>
-                <canvas id="chart-{{ loop.index0 }}"></canvas>
+    <div class="dashboard-container">
+        <!-- Summary Card -->
+        <div class="card summary">
+            <h3>Summary</h3>
+            <ul>
+                <li>
+                    <strong>{{ activity_data|length }}</strong> activities tracked
+                </li>
+                <li>
+                    <strong>{{ total_actions }}</strong> total actions ({{ period }})
+                </li>
+                <li>
+                    <strong>{{ trend_change }}%</strong> change vs last period
+                </li>
+            </ul>
+            <div class="chart-wrapper">
+                <canvas id="summaryChart"></canvas>
             </div>
-        {% endfor %}
+        </div>
+        <h2>All Activity Trends</h2>
+        <div class="activity-list">
+            {% for activity in activity_data %}
+                <div class="card activity">
+                    <h3>{{ activity.name }}</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-{{ loop.index0 }}"></canvas>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
 {% block scripts %}
@@ -53,16 +59,17 @@ new Chart(summaryCtx, {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         scales: { y: { beginAtZero: true } }
     }
 });
 
-// --- Activity Trend Charts using Chart.js ---
+// --- Activity Trend Charts ---
 const activityData = {{ activity_data | tojson }};
 activityData.forEach((activity, index) => {
     const ctx = document.getElementById(`chart-${index}`).getContext('2d');
-    const trendColor = activity.trend_line[activity.trend_line.length-1] >= activity.trend_line[0] 
-                       ? 'var(--primary)' 
+    const trendColor = activity.trend_line[activity.trend_line.length-1] >= activity.trend_line[0]
+                       ? 'var(--primary)'
                        : 'var(--danger)';
 
     new Chart(ctx, {
@@ -90,9 +97,8 @@ activityData.forEach((activity, index) => {
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { display: true }
-            },
+            maintainAspectRatio: false,
+            plugins: { legend: { display: true } },
             scales: {
                 x: { title: { display: true, text: 'Date' } },
                 y: { beginAtZero: true, title: { display: true, text: 'Delta count' } }

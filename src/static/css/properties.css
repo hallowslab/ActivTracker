@@ -1,28 +1,25 @@
 /* static/css/properties.css */
 /* Properties block */
 .properties {
-    max-width: 80%;
-    width: 60%;
-    background: #dfdfdf;
-    border-left: 4px solid var(--primary);
-    padding: 0.75em 1em;
-    border-radius: 8px;
-    margin: 0.5em 0 1em;
-    font-size: 0.9em;
+max-width: 80%;
+width: 60%;
+background: #dfdfdf;
+border-left: 4px solid var(--primary);
+padding: 0.75em 1em;
+border-radius: 8px;
+margin: 0.5em 0 1em;
+font-size: 0.9em;
 }
-
 .properties summary {
-    font-weight: 600;
-    cursor: pointer;
+font-weight: 600;
+cursor: pointer;
 }
-
 .properties ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0.25em 0 0;
+list-style: none;
+padding-left: 0;
+margin: 0.25em 0 0;
 }
-
 .properties li {
-    margin-bottom: 0.25em;
-    padding-left: 1em;
+margin-bottom: 0.25em;
+padding-left: 1em;
 }

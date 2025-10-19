@@ -1,202 +1,177 @@
 /* --- Variables --- */
 :root {
-    --primary: #2F9C95;
-    --secondary: #E0E0E0;
-    --danger: #E53935;
-    --warning: #FFB300;
-    --info: #0d6efd;
-    --background: #FAFAFA;
-    --text: #212121;
-    --header-bg: var(--primary);
-    --header-text: #fff;
-    --nav-bg: var(--secondary);
+--primary: #2F9C95;
+--secondary: #E0E0E0;
+--danger: #E53935;
+--warning: #FFB300;
+--info: #0d6efd;
+--background: #FAFAFA;
+--text: #212121;
+--header-bg: var(--primary);
+--header-text: #fff;
+--nav-bg: var(--secondary);
 }
-
 /* --- Body --- */
 body {
-    font-family: sans-serif;
-    max-width: 70vw;
-    margin: 0 auto;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background: var(--background);
-    color: var(--text);
+font-family: sans-serif;
+max-width: 70vw;
+margin: 0 auto;
+padding: 0;
+display: flex;
+flex-direction: column;
+min-height: 100vh;
+background: var(--background);
+color: var(--text);
 }
-
 /* --- Header --- */
 header {
-    background-color: var(--header-bg);
-    color: var(--header-text);
-    padding: 3rem;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+background-color: var(--header-bg);
+color: var(--header-text);
+padding: 3rem;
+text-align: center;
+position: sticky;
+top: 0;
+z-index: 10;
 }
-
 /* --- Main --- */
 main {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto;
-    width: 100%;
+flex: 1;
+padding: 1rem;
+overflow-y: auto;
+width: 100%;
 }
-
 .content-wrapper {
-    width: 80%;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 3rem;
-    padding-top: 1.5rem;
+width: 80%;
+margin: auto;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding-bottom: 3rem;
+padding-top: 1.5rem;
 }
-
 /* --- Navigation --- */
 nav {
-    display: flex;
-    justify-content: space-around;
-    background-color: var(--nav-bg);
-    padding: 0.5rem 0;
-    border-top: 1px solid #ccc;
-    position: sticky;
-    bottom: 0;
+display: flex;
+justify-content: space-around;
+background-color: var(--nav-bg);
+padding: 0.5rem 0;
+border-top: 1px solid #ccc;
+position: sticky;
+bottom: 0;
 }
-
 nav a {
-    text-decoration: none;
-    color: var(--text);
-    font-weight: bold;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    transition: background 0.15s;
+text-decoration: none;
+color: var(--text);
+font-weight: bold;
+padding: 0.25rem 0.5rem;
+border-radius: 0.25rem;
+transition: background 0.15s;
 }
-
 nav a:hover,
 nav a:active {
-    background-color: var(--primary);
-    color: #fff;
+background-color: var(--primary);
+color: #fff;
 }
-
 /* --- Flash messages --- */
 ul.flash {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 1rem;
+list-style: none;
+padding: 0;
+margin-bottom: 1rem;
 }
-
 li.success {
-    color: var(--primary);
+color: var(--primary);
 }
-
 li.error {
-    color: var(--danger);
+color: var(--danger);
 }
-
 li.warning {
-    color: var(--warning);
+color: var(--warning);
 }
-
 /* --- Buttons --- */
 button,
 button.btn {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: transform 0.1s, background-color 0.1s;
+padding: 0.5rem 1rem;
+font-size: 1rem;
+border: none;
+border-radius: 0.25rem;
+cursor: pointer;
+transition: transform 0.1s, background-color 0.1s;
 }
-
 button.btn-primary {
-    background-color: var(--primary) !important;
-    color: #fff !important;
+background-color: var(--primary) !important;
+color: #fff !important;
 }
-
 button.btn-secondary {
-    background-color: var(--secondary) !important;
-    color: var(--text) !important;
+background-color: var(--secondary) !important;
+color: var(--text) !important;
 }
-
 button.btn-danger {
-    background-color: var(--danger) !important;
-    color: #fff !important;
+background-color: var(--danger) !important;
+color: #fff !important;
 }
-
 button:active {
-    transform: scale(0.95);
+transform: scale(0.95);
 }
-
 /* --- Inputs --- */
 input[type="text"],
 input[type="number"],
 textarea,
 select {
-    padding: 0.5rem;
-    font-size: 1rem;
-    width: 100%;
-    margin-bottom: 0.5rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+padding: 0.5rem;
+font-size: 1rem;
+width: 100%;
+margin-bottom: 0.5rem;
+border-radius: 0.25rem;
+border: 1px solid #ccc;
+box-sizing: border-box;
 }
-
 input:focus,
 textarea:focus,
 select:focus {
-    outline: 2px solid var(--primary);
+outline: 2px solid var(--primary);
 }
-
 .auth-page nav {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px) saturate(180%);
-    -webkit-backdrop-filter: blur(8px) saturate(180%);
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    z-index: 20;
+background: rgba(255, 255, 255, 0.2);
+backdrop-filter: blur(8px) saturate(180%);
+-webkit-backdrop-filter: blur(8px) saturate(180%);
+border-top: 1px solid rgba(255, 255, 255, 0.3);
+border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+position: fixed;
+width: 100%;
+bottom: 0;
+left: 0;
+z-index: 20;
 }
-
 .auth-page nav a {
-    color: gray;
-    /* gray links to contrast gradient */
+color: gray;
+/* gray links to contrast gradient */
 }
-
 .auth-page nav a:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    color: #000;
+background-color: rgba(255, 255, 255, 0.3);
+color: #000;
 }
-
 @media (min-width: 600px) {
-    main {
-        padding: 2rem 2rem;
-        max-width: 80%;
-        margin: 0 auto;
-        /* centers the main block */
-    }
+main {
+padding: 2rem 2rem;
+max-width: 80%;
+margin: 0 auto;
+/* centers the main block */
 }
-
+}
 @media (max-width: 600px) {
-    body {
-        max-width: 100%;
-        margin: auto;
-    }
-
-    main {
-        margin: auto;
-        width: 80%;
-        max-width: 100%;
-    }
-
-    .content-wrapper {
-        margin: 0 auto;
-        padding: 0 0.5rem;
-        /* optional small padding */
-    }
+body {
+max-width: 100%;
+margin: auto;
+}
+main {
+margin: auto;
+width: 80%;
+max-width: 100%;
+}
+.content-wrapper {
+margin: 0 auto;
+padding: 0 0.5rem;
+/* optional small padding */
+}
 }

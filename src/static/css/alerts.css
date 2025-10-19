@@ -1,14 +1,12 @@
 ul.flash {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 1rem;
+list-style: none;
+padding: 0;
+margin-bottom: 1rem;
 }
-
 li.success {
-    color: var(--info);
+color: var(--info);
 }
-
 li.error,
 li.warning {
-    color: var(--danger);
+color: var(--danger);
 }

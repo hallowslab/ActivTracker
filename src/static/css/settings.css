@@ -1,35 +1,30 @@
 /* Optional tweaks specific to settings page */
 .settings-card {
-    max-width: 500px; /* adjust width if needed */
-    width: 90%;
-    padding: 2rem;
+max-width: 500px; /* adjust width if needed */
+width: 90%;
+padding: 2rem;
 }
-
 /* Section headings inside settings */
 .form-section h2 {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    color: var(--text);
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.5rem;
+margin-bottom: 1rem;
+font-size: 1.2rem;
+color: var(--text);
+border-bottom: 1px solid #eee;
+padding-bottom: 0.5rem;
 }
-
 /* Divider between sections */
 .section-divider {
-    margin: 2rem 0;
-    border-color: #ddd;
+margin: 2rem 0;
+border-color: #ddd;
 }
-
 /* Flash messages can be reused from form.css or card.css */
-
 /* Responsive tweaks (optional) */
 @media (max-width: 600px) {
-    .settings-card {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
-    .form-section h2 {
-        font-size: 1.1rem;
-    }
+.settings-card {
+padding: 1.5rem;
+margin: 1rem;
+}
+.form-section h2 {
+font-size: 1.1rem;
+}
 }

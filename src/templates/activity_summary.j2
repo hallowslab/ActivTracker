@@ -1,72 +1,78 @@
 {% extends "base.html" %}
-
 {% block title %}Activity Summary{% endblock %}
-
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/summary.css') }}">
+{% endblock %}
 {% block content %}
+    <div class="summary-container">
+        <h1>{{ data.action.name }} - Last {{ data.days }} days</h1>
+        <a href="{{ url_for("action.list_actions") }}" class="back-link">← Back</a>
+        <form method="get" class="summary-controls">
+            <div>
+                <label for="action_id">Activity:</label>
+                <select name="action_id" id="action_id" onchange="this.form.submit()">
+                    {% for act in data.actions %}
+                        <option value="{{ act.id }}"
+                                {% if act.id == data.action.id %}selected{% endif %}>{{ act.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="days">Days:</label>
+                <input type="number"
+                       id="days"
+                       name="days"
+                       value="{{ data.days }}"
+                       min="1"
+                       max="365">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+        <canvas id="activityChart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('activityChart').getContext('2d');
 
-<h1>{{ data.action.name }} - Last {{ days }} days</h1>
-<a href="{{ url_for('action.list_actions') }}">Back</a>
+        const labels = {{ data.labels|tojson }};
+        const values = {{ data._values|tojson }};
 
-<!-- Activity selector -->
-<form method="get" action="">
-    <label for="action_id">Select activity:</label>
-    <select name="action_id" id="action_id" onchange="this.form.submit()">
-        {% for act in data.actions %}
-        <option value="{{ act.id }}" {% if act.id == data.action.id %}selected{% endif %}>{{ act.name }}</option>
-        {% endfor %}
-    </select>
-</form>
+        const chartData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Delta per day',
+                    data: values,
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    tension: 0.3
+                },
+                {
+                    label: 'Trend',
+                    data: {{ data.trend_line|tojson }},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0
+                }
+            ]
+        };
 
-<canvas id="activityChart" width="600" height="400"></canvas>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const ctx = document.getElementById('activityChart').getContext('2d');
-
-// Dates on X-axis, values on Y-axis
-const labels = {{ data.labels|tojson }};
-const values = {{ data._values|tojson }};
-
-const data = {
-    labels: labels,
-    datasets: [{
-        label: 'Delta per day',
-        data: values,
-        fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-        tension: 0.3 // smooth line
-    },
-    {
-        label: 'Trend',
-        data: {{ data.trend_line|tojson }},
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 2,
-        fill: false,
-        pointRadius: 0       // hide points
-    }]
-};
-
-const config = {
-    type: 'line',
-    data: data,
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: true },
-        },
-        scales: {
-            x: {
-                title: { display: true, text: 'Date' }
-            },
-            y: {
-                beginAtZero: true,
-                title: { display: true, text: 'Delta count' }
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { beginAtZero: true, title: { display: true, text: 'Delta count' } }
+                }
             }
-        }
-    }
-};
-
-new Chart(ctx, config);
-</script>
+        });
+    </script>
 {% endblock %}

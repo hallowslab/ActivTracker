@@ -15,6 +15,9 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = []
+dev = [
+    "pre-commit>=4.3.0",
+]
 
-
+[tool.isort]
+line_length = 100

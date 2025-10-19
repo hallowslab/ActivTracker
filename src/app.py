@@ -36,12 +36,16 @@ def index():
     activity_data = []
     total_actions = 0
 
+    # Prepare summary for chart
+    summary_counts = {}
+
     for action in actions:
         timeseries = get_activity_timeseries(user.id, action.id, days=30)
         labels = [entry["date"] for entry in timeseries]
         values = [entry["delta"] for entry in timeseries]
         total_actions += sum(values)
 
+        # trend line
         x = np.arange(len(values))
         y = np.array(values)
         if len(values) > 1:
@@ -50,26 +54,27 @@ def index():
         else:
             trend_line = values
 
-        activity_data.append(
-            {
-                "name": action.name,
-                "values": values,
-                "trend_line": trend_line,
-                "labels": labels,
-            }
-        )
+        activity_data.append({
+            "name": action.name,
+            "values": values,
+            "trend_line": trend_line,
+            "labels": labels,
+        })
 
-    # Simple example of change metric: compare first and last week
+        # accumulate for summary
+        summary_counts[action.name] = sum(values)
+
+    # compute simple trend change
     if len(activity_data) > 0:
         first_total = sum(sum(a["values"][:7]) for a in activity_data)
         last_total = sum(sum(a["values"][-7:]) for a in activity_data)
-        trend_change = (
-            round(((last_total - first_total) / first_total * 100), 1)
-            if first_total
-            else 0
-        )
+        trend_change = round(((last_total - first_total) / first_total * 100), 1) if first_total else 0
     else:
         trend_change = 0
+
+    # summary chart labels and values
+    summary_labels = list(summary_counts.keys())
+    summary_values = list(summary_counts.values())
 
     return render_template(
         "dashboard.j2",
@@ -77,6 +82,8 @@ def index():
         total_actions=total_actions,
         period="last 30 days",
         trend_change=trend_change,
+        labels=summary_labels,
+        values=summary_values
     )
 
 

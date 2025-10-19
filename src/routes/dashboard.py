@@ -11,35 +11,32 @@ from model_helpers import summarize_actions, get_activity_timeseries
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
 
-@dashboard_bp.route("/summary")
+@dashboard_bp.route("/summary/activity")
 @login_required
-def view_summary():
+def activity_summary():
     user = current_user()
     assert user is not None
 
-    period = request.args.get("period", "week")  # default to week
-    summary = summarize_actions(user.id, period)
-    labels = list(summary.keys())
-    values = list(summary.values())
-    print(f"LABELS: {labels}, Values: {values}")
-    # data = {"labels": labels, "values": values, "period": period}
-    return render_template("summary.j2", labels=labels, values=values, period=period)
+    # Use GET parameters
+    action_id = request.args.get("action_id", type=int)
+    days = request.args.get("days", default=30, type=int)
 
+    actions = db_session.query(Action).filter_by(user_id=user.id).all()
+    if not actions:
+        flash("No actions found", "error")
+        return redirect(url_for("action.list_actions"))
 
-@dashboard_bp.route("/summary/activity/<int:action_id>")
-@login_required
-def activity_summary(action_id):
-    user = current_user()
-    assert user is not None
+    if action_id is None:
+        action_id = actions[0].id  # default to first action
 
-    days = int(request.args.get("days", 30))  # last 30 days by default
+    action = next((a for a in actions if a.id == action_id), None)
+    if not action:
+        flash("Action not found", "error")
+        return redirect(url_for("action.list_actions"))
+
     timeseries = get_activity_timeseries(user.id, action_id, days=days)
-
     labels = [entry["date"] for entry in timeseries]
     values = [entry["delta"] for entry in timeseries]
-
-    actions = db_session.query(Action).filter_by(user_id=user.id)
-    action = actions.filter_by(id=action_id, user_id=user.id).first()
 
     x = np.arange(len(values))
     y = np.array(values)
@@ -48,15 +45,12 @@ def activity_summary(action_id):
 
     data = {
         "action": action,
-        "actions": actions.all(),
+        "actions": actions,
         "labels": labels,
         "_values": values,
         "days": days,
         "trend_line": trend_line,
     }
-    if not action:
-        flash("Action not found", "error")
-        return redirect(url_for("action.list_actions"))
 
     return render_template("activity_summary.j2", data=data)
 

@@ -12,7 +12,7 @@ from routes.api import api_bp
 from routes.dashboard import dashboard_bp
 from models import Action
 from database import db_session
-from cli import create_test_data
+from cli import create_test_data, collect_static
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
@@ -27,6 +27,7 @@ app.register_blueprint(dashboard_bp)
 
 # Commands
 app.cli.add_command(create_test_data)
+app.cli.add_command(collect_static)
 
 
 @app.route("/")

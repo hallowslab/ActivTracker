@@ -8,33 +8,24 @@
     <div class="card summary">
         <h1>{{ data.action.name }} - Last {{ data.days }} days</h1>
         <form method="get" class="summary-controls">
+            {{ form.csrf_token }}
             <div>
-                <label for="action_id">Activity:</label>
-                <select name="action_id" id="action_id" onchange="this.form.submit()">
-                    {% for act in data.actions %}
-                        <option value="{{ act.id }}"
-                                {% if act.id == data.action.id %}selected{% endif %}>{{ act.name }}</option>
-                    {% endfor %}
-                </select>
+                {{ form.action_id.label }}
+                {{ form.action_id(onchange="this.form.submit()") }}
             </div>
             <div>
-                <label for="days">Days:</label>
-                <input type="number"
-                       id="days"
-                       name="days"
-                       value="{{ data.days }}"
-                       min="1"
-                       max="365">
+                {{ form.days.label }}
+                {{ form.days(min="1", max="365") }}
             </div>
             <div>
-                <button type="submit" class="btn btn-primary">Update</button>
+                {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
         <canvas id="activityChart"></canvas>
         <a href="{{ url_for("action.list_actions") }}"
            class="btn btn-secondary back-link">← Back</a>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <script>
         const ctx = document.getElementById('activityChart').getContext('2d');
 

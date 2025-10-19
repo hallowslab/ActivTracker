@@ -7,36 +7,49 @@ from database import db_session
 from models import Action
 from auth_helpers import login_required, current_user
 from model_helpers import summarize_actions, get_activity_timeseries
+from forms import ActivitySummaryForm
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
 
-@dashboard_bp.route("/summary/activity")
+@dashboard_bp.route("/summary/activity", methods=["GET", "POST"])
 @login_required
 def activity_summary():
     user = current_user()
     assert user is not None
-
-    # Use GET parameters
-    action_id = request.args.get("action_id", type=int)
-    days = request.args.get("days", default=30, type=int)
 
     actions = db_session.query(Action).filter_by(user_id=user.id).all()
     if not actions:
         flash("No actions found", "error")
         return redirect(url_for("action.list_actions"))
 
-    if action_id is None:
-        action_id = actions[0].id  # default to first action
+    form = ActivitySummaryForm(request.args)  # Handle GET params
+
+    # Populate select choices dynamically
+    form.action_id.choices = [(a.id, a.name) for a in actions]
+
+    # Set default values
+    if not form.action_id.data:
+        form.action_id.data = actions[0].id
+
+    if not form.days.data:
+        form.days.data = 30
+
+    # Extract values
+    action_id = form.action_id.data
+    days = form.days.data
 
     action = next((a for a in actions if a.id == action_id), None)
     if not action:
         flash("Action not found", "error")
         return redirect(url_for("action.list_actions"))
 
+    # Compute time series and trend
     timeseries = get_activity_timeseries(user.id, action_id, days=days)
     labels = [entry["date"] for entry in timeseries]
     values = [entry["delta"] for entry in timeseries]
+
+    import numpy as np
 
     x = np.arange(len(values))
     y = np.array(values)
@@ -51,8 +64,7 @@ def activity_summary():
         "days": days,
         "trend_line": trend_line,
     }
-
-    return render_template("activity_summary.j2", data=data)
+    return render_template("activity_summary.j2", form=form, data=data)
 
 
 # Show token page

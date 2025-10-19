@@ -64,14 +64,14 @@ uv run python create_db.py
 </code>
 
 ### 4. Configure .env
-- Create a file named .env inside src from the template .env.template and modify the variables
+- Create a .env file inside the src directory by copying .env.template, then modify the following variables:
   - FLASK_ENV="development" - set to "production"
   - STATIC_ROOT=/var/www/activ/static - set to the root of where you will serve static assets with nginx
 
 This will create a local SQLite database and initialize all tables.
 
 ### 4. Setup nginx
-- Modify activitytracker.nginx replace STATIC_ROOT
+- Modify activitytracker.nginx to replace STATIC_ROOT with your actual path
 - Copy the modified file to to /etc/nginx/sites-available/activitytracker
 - Enable it with:
   `sudo ln -s /etc/nginx/sites-available/activitytracker /etc/nginx/sites-enabled/`
@@ -137,7 +137,7 @@ uv run flask create-test-data USERNAME NUM_ACTIONS DAYS
 </code>
 
 This will populate your database with random activity data:
-    - `USERNAME`: The user that will own the tasks **THE USER MUST EXIST IN THE DATABASE**
+    - `USERNAME`: The user that will own the actions **THE USER MUST EXIST IN THE DATABASE**
     - `NUM_ACTIONS`: specify the number of actions to create
     - `DAYS` specifies how many days of activities to create.
 

@@ -22,13 +22,13 @@ def account_settings():
     change_form = ChangePasswordForm(prefix="change")
     delete_form = DeleteAccountForm(prefix="delete")
 
-    if change_form.validate_on_submit():
+    if change_form.submit.data and change_form.validate_on_submit():
+        # Handle password change
         old_password = change_form.old_password.data
         new_password = change_form.new_password.data
         assert old_password is not None
         assert new_password is not None
 
-        # Handle password change
         if not check_password_hash(user.password_hash, old_password):
             flash("Old password is incorrect.", "error")
         else:
@@ -36,8 +36,15 @@ def account_settings():
             db_session.commit()
             flash("Password updated successfully.", "success")
 
-    elif delete_form.validate_on_submit():
-        # Handle account deletion
+    elif delete_form.submit.data and delete_form.validate_on_submit():
+        # Verify password before deletion
+        current_password = delete_form.password.data
+        assert current_password is not None
+        if not check_password_hash(user.password_hash, current_password):
+            flash("Password is incorrect.", "error")
+            return redirect(url_for("settings.account_settings"))
+
+        # Proceed with deletion
         user_id = user.id
         logout_user()
         user_to_delete = db_session.query(User).filter_by(id=user_id).one_or_none()
@@ -52,3 +59,4 @@ def account_settings():
         change_form=change_form,
         delete_form=delete_form
     )
+

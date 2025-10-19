@@ -1,0 +1,47 @@
+nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--nav-bg);
+    padding: 0.5rem 0;
+    border-top: 1px solid #ccc;
+    position: sticky;
+    bottom: 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: background 0.15s;
+}
+
+nav a:hover,
+nav a:active {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+/* Auth page overrides */
+.auth-page nav {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px) saturate(180%);
+    border-top: 1px solid rgba(255,255,255,0.3);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+}
+
+.auth-page nav a {
+    color: gray;
+}
+
+.auth-page nav a:hover {
+    background-color: rgba(255,255,255,0.3);
+    color: #000;
+}

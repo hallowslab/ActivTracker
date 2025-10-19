@@ -8,6 +8,11 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alerts.css') }}">
     {% block head %}{% endblock %}
 </head>
 
@@ -35,6 +40,7 @@
         <a href="{{ url_for("index") }}">Home</a>
         <a href="{{ url_for("action.list_actions") }}">Actions</a>
         <a href="{{ url_for("dashboard.show_token") }}">API Token</a>
+        <a href="{{ url_for("settings.account_settings") }}">Settings</a>
         {% if session.get('user_id') %}
         <a href="{{ url_for("auth.logout") }}">Logout</a>
         {% else %}

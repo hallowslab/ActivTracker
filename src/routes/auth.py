@@ -61,7 +61,7 @@ def login():
 
 
 # Logout route
-@auth_bp.route("/logout")
+@auth_bp.route("/logout", methods=["POST"])
 def logout():
     session.clear()
     flash("Logged out!", "info")

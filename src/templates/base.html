@@ -43,7 +43,10 @@
         <a href="{{ url_for("dashboard.show_token") }}">API Token</a>
         <a href="{{ url_for("settings.account_settings") }}">Settings</a>
         {% if session.get('user_id') %}
-        <a href="{{ url_for("auth.logout") }}">Logout</a>
+        <form action="{{ url_for('auth.logout') }}" method="post" class="logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="link-button">Logout</button>
+        </form>
         {% else %}
         <a href="{{ url_for("auth.login") }}">Login</a>
         <a href="{{ url_for("auth.register") }}">Register</a>

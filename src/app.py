@@ -1,11 +1,8 @@
 import os
 from pathlib import Path
-from flask import Flask, render_template
+from flask import Flask
 from dotenv import load_dotenv
-import numpy as np
 
-from auth_helpers import current_user, login_required
-from model_helpers import get_activity_timeseries
 from routes.auth import auth_bp
 from routes.actions import action_bp
 from routes.api import api_bp
@@ -13,6 +10,7 @@ from routes.dashboard import dashboard_bp
 from routes.settings import settings_bp
 from models import Action
 from database import db_session
+from forms import TimeframeForm
 from cli import create_test_data, collect_static
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -32,71 +30,8 @@ app.cli.add_command(create_test_data)
 app.cli.add_command(collect_static)
 
 
-@app.route("/")
-@login_required
-def index():
-    user = current_user()
-    assert user is not None
 
-    actions = db_session.query(Action).filter_by(user_id=user.id).all()
-    activity_data = []
-    total_actions = 0
 
-    # Prepare summary for chart
-    summary_counts = {}
-
-    for action in actions:
-        timeseries = get_activity_timeseries(user.id, action.id, days=30)
-        labels = [entry["date"] for entry in timeseries]
-        values = [entry["delta"] for entry in timeseries]
-        total_actions += sum(values)
-
-        # trend line
-        x = np.arange(len(values))
-        y = np.array(values)
-        if len(values) > 1:
-            slope, intercept = np.polyfit(x, y, 1)
-            trend_line = (intercept + slope * x).tolist()
-        else:
-            trend_line = values
-
-        activity_data.append(
-            {
-                "name": action.name,
-                "values": values,
-                "trend_line": trend_line,
-                "labels": labels,
-            }
-        )
-
-        # accumulate for summary
-        summary_counts[action.name] = sum(values)
-
-    # compute simple trend change
-    if len(activity_data) > 0:
-        first_total = sum(sum(a["values"][:7]) for a in activity_data)
-        last_total = sum(sum(a["values"][-7:]) for a in activity_data)
-        trend_change = (
-            round(((last_total - first_total) / first_total * 100), 1)
-            if first_total
-            else 0
-        )
-    else:
-        trend_change = 0
-
-    # summary chart labels and values
-    summary_labels = list(summary_counts.keys())
-    summary_values = list(summary_counts.values())
-
-    return render_template(
-        "dashboard.j2",
-        activity_data=activity_data,
-        total_actions=total_actions,
-        period="last 30 days",
-        trend_change=trend_change,
-        labels=summary_labels,
-        values=summary_values,
-    )
 
 
 @app.teardown_appcontext

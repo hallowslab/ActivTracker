@@ -18,12 +18,19 @@ class EditActionForm(FlaskForm):
     properties = TextAreaField("Properties (JSON)")
     submit = SubmitField("Save Changes")
 
+class TimeframeForm(FlaskForm):
+    days = IntegerField(
+        "Number of days",
+        validators=[DataRequired(), NumberRange(min=3, max=365)],
+        default=30,
+    )
+    submit = SubmitField("Update", render_kw={"class": "btn btn-primary"})
 
 class EditActivityForm(FlaskForm):
     delta = IntegerField(
         "Delta (amount)",
         default=1,
-        validators=[DataRequired(), NumberRange(min=-365, max=465)],
+        validators=[DataRequired(), NumberRange(min=-1000, max=1000)],
     )
     notes = TextAreaField("Notes")
     properties = TextAreaField("Properties (JSON)")
@@ -34,10 +41,10 @@ class LogActivityForm(FlaskForm):
     delta = IntegerField(
         "Delta (amount)",
         default=1,
-        validators=[DataRequired(), NumberRange(min=-365, max=465)],
+        validators=[DataRequired(), NumberRange(min=-1000, max=1000)],
     )
     notes = TextAreaField("Notes")
-    properties = TextAreaField("Properties (JSON)")
+    properties = TextAreaField("Properties (JSON)", default="{}")
     submit = SubmitField("Save Changes")
 
 

@@ -53,7 +53,7 @@ def login():
         if user and check_password_hash(user.password_hash, password):
             session["user_id"] = user.id
             flash("Logged in!", "info")
-            return redirect(url_for("index"))
+            return redirect(url_for("dashboard.index"))
 
         flash("Invalid credentials", "error")
         return redirect(url_for("auth.login"))
@@ -66,4 +66,4 @@ def login():
 def logout():
     session.clear()
     flash("Logged out!", "info")
-    return redirect(url_for("index"))
+    return redirect(url_for("dashboard.index"))

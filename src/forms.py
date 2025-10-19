@@ -1,10 +1,19 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, IntegerField, SubmitField, StringField, TextAreaField, HiddenField, PasswordField
+from wtforms import (
+    SelectField,
+    IntegerField,
+    SubmitField,
+    StringField,
+    TextAreaField,
+    HiddenField,
+    PasswordField,
+)
 from wtforms.validators import NumberRange, DataRequired, EqualTo, ValidationError
 
 from auth_helpers import current_user
 from database import db_session
 from models import Action
+
 
 class ActivitySummaryForm(FlaskForm):
     action_id = SelectField("Activity", coerce=int, validators=[DataRequired()])
@@ -18,6 +27,7 @@ class EditActionForm(FlaskForm):
     properties = TextAreaField("Properties (JSON)")
     submit = SubmitField("Save Changes")
 
+
 class TimeframeForm(FlaskForm):
     days = IntegerField(
         "Number of days",
@@ -25,6 +35,7 @@ class TimeframeForm(FlaskForm):
         default=30,
     )
     submit = SubmitField("Update", render_kw={"class": "btn btn-primary"})
+
 
 class EditActivityForm(FlaskForm):
     delta = IntegerField(
@@ -52,31 +63,34 @@ class LoginForm(FlaskForm):
     username = StringField(
         "Username",
         validators=[DataRequired()],
-        render_kw={"autocomplete": "username", "class": "auth-input"}
+        render_kw={"autocomplete": "username", "class": "auth-input"},
     )
     password = PasswordField(
         "Password",
         validators=[DataRequired()],
-        render_kw={"autocomplete": "current-password", "class": "auth-input"}
+        render_kw={"autocomplete": "current-password", "class": "auth-input"},
     )
     submit = SubmitField("Login", render_kw={"class": "btn btn-primary"})
+
 
 class RegisterForm(FlaskForm):
     username = StringField(
         "Username",
         validators=[DataRequired()],
-        render_kw={"autocomplete": "username", "class": "auth-input"}
+        render_kw={"autocomplete": "username", "class": "auth-input"},
     )
     password = PasswordField(
         "Password",
         validators=[DataRequired()],
-        render_kw={"autocomplete": "new-password", "class": "auth-input"}
+        render_kw={"autocomplete": "new-password", "class": "auth-input"},
     )
     submit = SubmitField("Login", render_kw={"class": "btn btn-primary"})
 
 
 class NewActionForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()], render_kw={"autocomplete": "activity"})
+    name = StringField(
+        "Name", validators=[DataRequired()], render_kw={"autocomplete": "activity"}
+    )
     notes = TextAreaField("Notes", default="")
     properties = TextAreaField("Properties (JSON)", default="{}")
     submit = SubmitField("Save Changes")
@@ -85,23 +99,24 @@ class NewActionForm(FlaskForm):
         user = current_user()
         if not user:
             raise ValidationError("Authentication required.")
-        
+
         # Check if the user already has an action with this name
-        existing = db_session.query(Action).filter_by(user_id=user.id, name=field.data).first()
+        existing = (
+            db_session.query(Action).filter_by(user_id=user.id, name=field.data).first()
+        )
         if existing:
             raise ValidationError("Duplicate action name.")
-    
 
 
 class ChangePasswordForm(FlaskForm):
     old_password = PasswordField("Old Password", validators=[DataRequired()])
-    new_password = PasswordField(
-        "New Password",
-        validators=[DataRequired()]
-    )
+    new_password = PasswordField("New Password", validators=[DataRequired()])
     confirm_password = PasswordField(
         "Confirm New Password",
-        validators=[DataRequired(), EqualTo("new_password", message="Passwords must match")]
+        validators=[
+            DataRequired(),
+            EqualTo("new_password", message="Passwords must match"),
+        ],
     )
     submit = SubmitField("Change Password")
     action = HiddenField(default="change_password")

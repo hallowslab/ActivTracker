@@ -30,10 +30,6 @@ app.cli.add_command(create_test_data)
 app.cli.add_command(collect_static)
 
 
-
-
-
-
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()

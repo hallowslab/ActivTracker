@@ -55,8 +55,5 @@ def account_settings():
         return redirect(url_for("auth.login"))
 
     return render_template(
-        "settings.j2",
-        change_form=change_form,
-        delete_form=delete_form
+        "settings.j2", change_form=change_form, delete_form=delete_form
     )
-

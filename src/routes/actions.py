@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models import Action, ActivityLog
 from database import db_session
 from auth_helpers import login_required, current_user
-from forms import EditActionForm, EditActivityForm, LogActivityForm
+from forms import EditActionForm, EditActivityForm, LogActivityForm, NewActionForm
 
 action_bp = Blueprint("action", __name__, url_prefix="/actions")
 
@@ -27,10 +27,11 @@ def new_action():
     user = current_user()
     assert user is not None
 
-    if request.method == "POST":
-        name = request.form["name"].strip()
-        notes = request.form.get("notes", "")
-        properties_raw = request.form.get("properties", "{}")
+    form = NewActionForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        notes = form.notes.data
+        properties_raw = form.properties.data
 
         try:
             properties = json.loads(properties_raw) if properties_raw else {}
@@ -45,7 +46,7 @@ def new_action():
         flash(f"Action '{name}' created successfully!", "info")
         return redirect(url_for("action.list_actions"))
 
-    return render_template("new_action.j2")
+    return render_template("new_action.j2", form=form)
 
 
 # Edit action

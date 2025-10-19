@@ -4,7 +4,7 @@ server {
 
     # Static files directly from disk
     location /static/ {
-        alias STATIC_ROOT;
+        alias STATIC_ROOT/;
         expires 30d;
         add_header Cache-Control "public";
         access_log off;

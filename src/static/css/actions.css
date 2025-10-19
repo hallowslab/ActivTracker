@@ -1,4 +1,4 @@
-/* Container header */
+/* Header */
 .actions-header {
   display: flex;
   justify-content: space-between;
@@ -12,24 +12,6 @@
   color: var(--text);
 }
 
-.new-action-btn {
-  background-color: var(--primary);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  text-decoration: none;
-  transition: background-color 0.2s ease, transform 0.1s;
-}
-
-.new-action-btn:hover {
-  background-color: #1e826f;
-}
-
-.new-action-btn:active {
-  transform: scale(0.97);
-}
-
 /* Action cards list */
 .action-list {
   display: flex;
@@ -39,17 +21,6 @@
   list-style: none;
 }
 
-.action-card {
-  background-color: var(--background);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-  transition: transform 0.1s ease, box-shadow 0.2s;
-}
-
-.action-card:active {
-  transform: scale(0.98);
-}
 
 /* Title and notes */
 .action-title {
@@ -90,38 +61,22 @@
   margin-bottom: 0.25em;
 }
 
-/* Action buttons */
 .action-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-start; /* optional */
 }
 
-.action-links a,
-.action-links button {
-  background-color: var(--secondary);
-  color: var(--text);
-  padding: 0.4rem 0.7rem;
-  border-radius: 0.4rem;
-  text-decoration: none;
+.action-links .btn {
+  flex: 1 1 auto;  /* evenly grow/shrink */
+  text-align: center;
   font-size: 0.9rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.15s;
+  padding: 0.4rem 0.7rem;
 }
 
-.action-links a:hover,
-.action-links button:hover {
-  background-color: #e0e0e0;
-}
-
-.action-links button.btn-danger {
-  background-color: var(--danger);
-  color: #fff;
-}
-
-.action-links button.btn-danger:hover {
-  background-color: #d32f2f;
+.action-links .btn-danger {
+  flex: 0 0 auto; /* natural width, stands out */
 }
 
 /* Empty state */

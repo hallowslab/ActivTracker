@@ -8,11 +8,11 @@
     <div class="actions-header">
         <h1>Your Actions</h1>
     </div>
-    <a href="{{ url_for("action.new_action") }}" class="new-action-btn">+ New Action</a>
+    <a href="{{ url_for("action.new_action") }}" class="btn btn-primary">+ New Action</a>
     {% if actions %}
         <ul class="action-list">
             {% for act in actions %}
-                <li class="action-card">
+                <li class="card action">
                     <div class="action-title">{{ act.name }}</div>
                     {% if act.notes %}<div class="action-notes">{{ act.notes }}</div>{% endif %}
                     {% if act.properties %}
@@ -28,11 +28,11 @@
                         </details>
                     {% endif %}
                     <div class="action-links">
-                        <a href="{{ url_for('action.log_activity', action_id=act.id) }}">Add Log</a>
-                        <a href="{{ url_for('action.view_action_history', action_id=act.id) }}">View</a>
-                        <a href="{{ url_for('dashboard.activity_summary', action_id=act.id) }}">Graph</a>
-                        <a href="{{ url_for('action.edit_action', action_id=act.id) }}">Edit</a>
-                        <button class="btn btn-danger" onclick="deleteAction({{ act.id }})">Delete Action</button>
+                        <a class="btn btn-secondary" href="{{ url_for('action.log_activity', action_id=act.id) }}">Add Log</a>
+                        <a class="btn btn-secondary" href="{{ url_for('action.view_action_history', action_id=act.id) }}">View</a>
+                        <a class="btn btn-secondary" href="{{ url_for('dashboard.activity_summary', action_id=act.id) }}">Graph</a>
+                        <a class="btn btn-secondary" href="{{ url_for('action.edit_action', action_id=act.id) }}">Edit</a>
+                        <button class="btn btn-danger" onclick="deleteAction({{ act.id }})">Delete</button>
                     </div>
                 </li>
             {% endfor %}

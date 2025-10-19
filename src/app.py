@@ -54,12 +54,14 @@ def index():
         else:
             trend_line = values
 
-        activity_data.append({
-            "name": action.name,
-            "values": values,
-            "trend_line": trend_line,
-            "labels": labels,
-        })
+        activity_data.append(
+            {
+                "name": action.name,
+                "values": values,
+                "trend_line": trend_line,
+                "labels": labels,
+            }
+        )
 
         # accumulate for summary
         summary_counts[action.name] = sum(values)
@@ -68,7 +70,11 @@ def index():
     if len(activity_data) > 0:
         first_total = sum(sum(a["values"][:7]) for a in activity_data)
         last_total = sum(sum(a["values"][-7:]) for a in activity_data)
-        trend_change = round(((last_total - first_total) / first_total * 100), 1) if first_total else 0
+        trend_change = (
+            round(((last_total - first_total) / first_total * 100), 1)
+            if first_total
+            else 0
+        )
     else:
         trend_change = 0
 
@@ -83,7 +89,7 @@ def index():
         period="last 30 days",
         trend_change=trend_change,
         labels=summary_labels,
-        values=summary_values
+        values=summary_values,
     )
 
 

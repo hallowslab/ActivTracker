@@ -33,7 +33,6 @@
             <h2>Delete Account</h2>
             <form method="post"
                   onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-                {{ delete_form.hidden_tag() }}
                 {{ delete_form.csrf_token }}
                 <div class="form-group">
                     {{ delete_form.password.label }}

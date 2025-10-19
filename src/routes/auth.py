@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+
+
 from models import User
 from database import db_session
+from forms import UserAccessForm
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -17,34 +20,45 @@ def current_user():
 # Register route
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    form = UserAccessForm()
+    if form.validate_on_submit():
+        assert form.username.data is not None
+        assert form.password.data is not None
+        username = form.username.data
+        password = form.password.data
+
         if db_session.query(User).filter_by(username=username).first():
             flash("Username exists!", "error")
             return redirect(url_for("auth.register"))
+
         user = User(username=username, password_hash=generate_password_hash(password))
         db_session.add(user)
         db_session.commit()
         flash("Registered! Log in now.", "info")
         return redirect(url_for("auth.login"))
-    return render_template("register.j2")
+    return render_template("register.j2", form=form)
 
 
 # Login route
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    form = UserAccessForm()
+    if form.validate_on_submit():
+        assert form.username.data is not None
+        assert form.password.data is not None
+        username = form.username.data
+        password = form.password.data
+
         user = db_session.query(User).filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
             session["user_id"] = user.id
             flash("Logged in!", "info")
             return redirect(url_for("index"))
+
         flash("Invalid credentials", "error")
         return redirect(url_for("auth.login"))
-    return render_template("login.j2")
+
+    return render_template("login.j2", form=form)
 
 
 # Logout route

@@ -9,21 +9,15 @@
     <div class="auth-container">
         <h1>Login</h1>
         <form method="post">
+        {{ form.csrf_token }}
+
             <div>
-                <label for="username">Username</label>
-                <input type="text"
-                       id="username"
-                       name="username"
-                       autocomplete="username"
-                       required>
+                {{ form.username.label }}
+                {{ form.username }}
             </div>
             <div>
-                <label for="password">Password</label>
-                <input type="password"
-                       id="password"
-                       name="password"
-                       autocomplete="current-password"
-                       required>
+                {{ form.password.label }}
+                {{ form.password }}
             </div>
             <br>
             <button type="submit">Login</button>

@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from models import User
 from database import db_session
-from forms import UserAccessForm
+from forms import LoginForm,RegisterForm
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -20,7 +20,7 @@ def current_user():
 # Register route
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    form = UserAccessForm()
+    form = RegisterForm()
     if form.validate_on_submit():
         assert form.username.data is not None
         assert form.password.data is not None
@@ -42,7 +42,7 @@ def register():
 # Login route
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    form = UserAccessForm()
+    form = LoginForm()
     if form.validate_on_submit():
         assert form.username.data is not None
         assert form.password.data is not None

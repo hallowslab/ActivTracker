@@ -48,7 +48,7 @@ class LogActivityForm(FlaskForm):
     submit = SubmitField("Save Changes")
 
 
-class UserAccessForm(FlaskForm):
+class LoginForm(FlaskForm):
     username = StringField(
         "Username",
         validators=[DataRequired()],
@@ -61,6 +61,20 @@ class UserAccessForm(FlaskForm):
     )
     submit = SubmitField("Login", render_kw={"class": "btn btn-primary"})
 
+class RegisterForm(FlaskForm):
+    username = StringField(
+        "Username",
+        validators=[DataRequired()],
+        render_kw={"autocomplete": "username", "class": "auth-input"}
+    )
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired()],
+        render_kw={"autocomplete": "new-password", "class": "auth-input"}
+    )
+    submit = SubmitField("Login", render_kw={"class": "btn btn-primary"})
+
+
 class NewActionForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()], render_kw={"autocomplete": "activity"})
     notes = TextAreaField("Notes", default="")
@@ -70,12 +84,12 @@ class NewActionForm(FlaskForm):
     def validate_name(self, field):
         user = current_user()
         if not user:
-            raise ValidationError("User not logged in")
+            raise ValidationError("Authentication required.")
         
         # Check if the user already has an action with this name
         existing = db_session.query(Action).filter_by(user_id=user.id, name=field.data).first()
         if existing:
-            raise ValidationError("You already have an action with this name.")
+            raise ValidationError("Duplicate action name.")
     
 
 

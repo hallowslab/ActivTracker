@@ -7,7 +7,6 @@
 {% block content %}
     <div class="card summary">
         <h1>{{ data.action.name }} - Last {{ data.days }} days</h1>
-        <a href="{{ url_for("action.list_actions") }}" class="back-link">← Back</a>
         <form method="get" class="summary-controls">
             <div>
                 <label for="action_id">Activity:</label>
@@ -32,6 +31,8 @@
             </div>
         </form>
         <canvas id="activityChart"></canvas>
+        <a href="{{ url_for("action.list_actions") }}"
+           class="btn btn-secondary back-link">← Back</a>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

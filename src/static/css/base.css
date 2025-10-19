@@ -25,7 +25,6 @@ body {
     color: var(--text);
 }
 
-
 /* --- Header --- */
 header {
     background-color: var(--header-bg);
@@ -205,6 +204,7 @@ select:focus {
 
     .content-wrapper {
         margin: 0 auto;
-        padding: 0 0.5rem; /* optional small padding */
+        padding: 0 0.5rem;
+        /* optional small padding */
     }
 }

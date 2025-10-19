@@ -1,27 +1,32 @@
-/* --- Base Button --- */
+/* Base Button */
 .btn {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  text-decoration-line: none;
-  transition: transform 0.1s, background-color 0.2s ease;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.1s, background-color 0.2s ease;
 }
 
 .btn:active {
-  transform: scale(0.95);
+    transform: scale(0.95);
 }
 
-/* --- Button Variants --- */
+/* Variants */
 .btn-primary {
-  background-color: var(--primary);
-  color: #fff;
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: color-mix(in srgb, var(--primary) 90%, black);
 }
 
 .btn-secondary {
-  background-color: var(--secondary);
-  color: var(--text);
+    background-color: var(--secondary);
+    color: var(--text);
 }
 
 .btn-secondary:hover {
@@ -30,10 +35,10 @@
 }
 
 .btn-danger {
-  background-color: var(--danger);
-  color: #fff;
+    background-color: var(--danger);
+    color: #fff;
 }
 
 .btn-danger:hover {
-    background-color: #d32f2f; /* slightly darker */
+    background-color: darken(var(--danger), 10%);
 }

@@ -29,7 +29,10 @@
                         <span>{{ log.timestamp.strftime("%d-%m-%Y %H:%M:%S") }}</span>
                         <div class="log-actions">
                             <span class="log-delta">▲{{ log.delta }}</span>
-                            <button class="btn btn-sm btn-info" onclick="window.location.href='{{ url_for('action.edit_activity', log_id=log.id) }}'">Edit</button>
+                            <button class="btn btn-sm btn-info"
+                                    onclick="window.location.href='{{ url_for('action.edit_activity', log_id=log.id) }}'">
+                                Edit
+                            </button>
                             <button class="btn btn-sm btn-danger" onclick="deleteLog({{ log.id }})">Delete</button>
                         </div>
                     </div>

@@ -80,7 +80,6 @@ activityData.forEach((activity, index) => {
     const trendColor = activity.trend_line[activity.trend_line.length-1] >= activity.trend_line[0]
                        ? '#0d6efd'
                        : '#FFB300';
-    console.log(trendColor)
 
     new Chart(ctx, {
         type: 'line',

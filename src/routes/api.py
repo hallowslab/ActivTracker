@@ -79,7 +79,7 @@ def api_add_log(action_id):
         return jsonify({"error": "Action not found"}), 404
 
     data = request.get_json()
-    note = data.get("note", "")
+    note = data.get("notes", "")
     delta = int(data.get("delta", 1))
     properties = data.get("properties", {})
 

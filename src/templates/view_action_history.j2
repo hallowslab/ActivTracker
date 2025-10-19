@@ -36,7 +36,7 @@
                             <button class="btn btn-sm btn-danger" onclick="deleteLog({{ log.id }})">Delete</button>
                         </div>
                     </div>
-                    {% if log.note %}<div class="log-note">{{ log.note }}</div>{% endif %}
+                    {% if log.notes %}<div class="log-notes">{{ log.notes }}</div>{% endif %}
                     {% if log.properties %}<pre>{{ log.properties | tojson(indent=2) }}</pre>{% endif %}
                 </div>
             {% endfor %}

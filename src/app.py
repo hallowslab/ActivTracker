@@ -16,6 +16,9 @@ from cli import create_test_data
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
+FLASK_ENV: str = os.getenv("FLASK_ENV", "development")
+_DEBUG: bool = True if FLASK_ENV == "development" else False
+
 # Blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(action_bp)
@@ -109,8 +112,6 @@ def load_secret(path: Path = Path(".secret")):
 
 def init():
     load_dotenv()
-    FLASK_ENV: str = os.getenv("FLASK_ENV", "development")
-    _DEBUG: bool = True if FLASK_ENV == "development" else False
     print(f"FLASK_ENV: {FLASK_ENV}, DEBUG: {_DEBUG}")
     app.secret_key = "!DEBUG!"
     if FLASK_ENV == "production":
@@ -119,8 +120,8 @@ def init():
         except:
             raise RuntimeError("Secret key file missing in production")
     print(f"SECRET: {app.secret_key}")
-    app.run(host="0.0.0.0", port=5000, debug=_DEBUG)
+    return app
 
 
 if __name__ == "__main__":
-    init()
+    init().run(host="0.0.0.0", port=5000, debug=_DEBUG)

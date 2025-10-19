@@ -50,7 +50,7 @@ class ActivityLog(Base):
     delta = mapped_column(Integer, default=1, nullable=False)
 
     # per-instance info
-    note: Mapped[str] = mapped_column(default="", nullable=False)
+    notes: Mapped[str] = mapped_column(default="", nullable=False)
     properties: Mapped[dict] = mapped_column(JSON, default={})
 
     action = relationship("Action", back_populates="logs")

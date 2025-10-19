@@ -129,7 +129,7 @@ def log_activity(action_id):
         return redirect(url_for("action.list_actions"))
 
     if request.method == "POST":
-        note = request.form.get("note", "")
+        notes = request.form.get("notes", "")
         properties_raw = request.form.get("properties", "{}")
         delta = int(request.form.get("delta", 1))
 
@@ -143,7 +143,7 @@ def log_activity(action_id):
             action_id=action.id,
             timestamp=datetime.now(timezone.utc),
             delta=delta,
-            note=note,
+            notes=notes,
             properties=properties,
         )
         db_session.add(log)

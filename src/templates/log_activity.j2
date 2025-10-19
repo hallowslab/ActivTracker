@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Log {{ action.name }}{% endblock %}
-{% block head %}
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/form.css') }}">
-{% endblock %}
 {% block content %}
     <div class="form-container">
         <h1>Log Activity for {{ action.name }}</h1>

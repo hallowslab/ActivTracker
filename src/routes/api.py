@@ -32,8 +32,9 @@ def api_list_actions():
         ]
     )
 
+
 # Delete an ation
-@api_bp.route("/actions/<int:action_id>", methods=["DELETE"])
+@api_bp.route("/delete/action/<int:action_id>", methods=["DELETE"])
 @token_required
 def delete_action(action_id):
     user = user_from_token()
@@ -49,8 +50,9 @@ def delete_action(action_id):
     db_session.commit()
     return jsonify({"message": f"Action '{action.name}' and its logs deleted"}), 200
 
+
 # Delete an instance of an action, an ActivityLog
-@api_bp.route("/logs/<int:log_id>", methods=["DELETE"])
+@api_bp.route("/delete/log/<int:log_id>", methods=["DELETE"])
 @token_required
 def delete_log(log_id):
     user = user_from_token()
@@ -63,6 +65,7 @@ def delete_log(log_id):
     db_session.delete(log)
     db_session.commit()
     return jsonify({"message": "Activity log deleted"}), 200
+
 
 # Log a new activity
 @api_bp.route("/actions/<int:action_id>/logs", methods=["POST"])

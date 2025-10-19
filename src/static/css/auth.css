@@ -28,19 +28,28 @@
 }
 
 /* Inputs overrides (semi-transparent) */
-.auth-container input[type=text],
-.auth-container input[type=password] {
+.auth-container .auth-input {
+    width: 100%;          /* make inputs full width */
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
     background: rgba(255, 255, 255, 0.85);
     color: #222;
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 0.5rem;
+    box-sizing: border-box;  /* ensures padding doesn't break width */
+    margin-bottom: 1rem;     /* spacing between fields */
 }
 
 /* Submit button (auth-specific look) */
 .auth-container button[type="submit"] {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
     background-color: rgba(255, 255, 255, 0.25);
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.5rem;
+    cursor: pointer;
 }
 
 /* Auth links */

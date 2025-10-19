@@ -4,25 +4,26 @@ from database import db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 
-settings_bp = Blueprint('settings', __name__, url_prefix='/settings')
+settings_bp = Blueprint("settings", __name__, url_prefix="/settings")
 
 
 def logout_user():
     session.clear()
 
-@settings_bp.route('/', methods=['GET', 'POST'])
+
+@settings_bp.route("/", methods=["GET", "POST"])
 @login_required
 def account_settings():
     user = current_user()
     assert user is not None
 
-    if request.method == 'POST':
-        action = request.form.get('action')
+    if request.method == "POST":
+        action = request.form.get("action")
 
-        if action == 'change_password':
-            old_password = request.form.get('old_password') or None
-            new_password = request.form.get('new_password') or None
-            confirm_password = request.form.get('confirm_password') or None
+        if action == "change_password":
+            old_password = request.form.get("old_password") or None
+            new_password = request.form.get("new_password") or None
+            confirm_password = request.form.get("confirm_password") or None
 
             if not old_password or not new_password or not confirm_password:
                 flash("You need to provide input all password fields", "error")
@@ -35,7 +36,7 @@ def account_settings():
                 db_session.commit()
                 flash("Password updated successfully.", "success")
 
-        elif action == 'delete_account':
+        elif action == "delete_account":
             user_id = user.id
             logout_user()
             user_to_delete = User.query.get(user_id)
@@ -43,6 +44,6 @@ def account_settings():
                 db_session.delete(user_to_delete)
                 db_session.commit()
             flash("Your account has been deleted.", "success")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for("auth.login"))
 
-    return render_template('settings.j2')
+    return render_template("settings.j2")

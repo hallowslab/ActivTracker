@@ -21,6 +21,7 @@ def create_test_data(username, actions=3, days=30):
     generate_fake_data(user.id, actions, days)
     print(f"Fake data generated for {username}")
 
+
 @click.command("collect-static")
 def collect_static():
     """Copy static files to the STATIC_ROOT directory safely."""

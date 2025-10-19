@@ -32,14 +32,14 @@ def account_settings():
             elif not check_password_hash(user.password_hash, old_password):
                 flash("Old password is incorrect.", "error")
             else:
-                user.password = generate_password_hash(new_password)
+                user.password_hash = generate_password_hash(new_password)
                 db_session.commit()
                 flash("Password updated successfully.", "success")
 
         elif action == "delete_account":
             user_id = user.id
             logout_user()
-            user_to_delete = User.query.get(user_id)
+            user_to_delete = db_session.query(User).filter_by(id=user_id).one_or_none()
             if user_to_delete:
                 db_session.delete(user_to_delete)
                 db_session.commit()

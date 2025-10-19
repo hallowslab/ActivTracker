@@ -15,10 +15,16 @@
         <button class="btn btn-danger" onclick="deleteAction({{ action.id }})">Delete Action</button>
     </div>
     {% if action.properties %}
-        <div class="properties-box">
-            <h3>General Properties</h3>
-            <pre>{{ action.properties | tojson(indent=2) }}</pre>
-        </div>
+    <details class="properties">
+        <summary>General Properties</summary>
+        <ul>
+            {% for key, value in action.properties.items() %}
+            <li>
+                <strong>{{ key|capitalize }}:</strong> {{ value }}
+            </li>
+            {% endfor %}
+        </ul>
+    </details>
     {% endif %}
     <h2>Recent Logs</h2>
     <div class="logs-list">

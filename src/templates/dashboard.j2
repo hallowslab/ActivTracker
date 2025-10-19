@@ -69,8 +69,9 @@ const activityData = {{ activity_data | tojson }};
 activityData.forEach((activity, index) => {
     const ctx = document.getElementById(`chart-${index}`).getContext('2d');
     const trendColor = activity.trend_line[activity.trend_line.length-1] >= activity.trend_line[0]
-                       ? 'var(--primary)'
-                       : 'var(--danger)';
+                       ? '#0d6efd'
+                       : '#FFB300';
+    console.log(trendColor)
 
     new Chart(ctx, {
         type: 'line',
@@ -81,7 +82,7 @@ activityData.forEach((activity, index) => {
                     label: 'Delta per day',
                     data: activity.values,
                     fill: false,
-                    borderColor: 'rgba(75,192,192,1)',
+                    borderColor: '#2F9C95',
                     backgroundColor: 'rgba(75,192,192,0.2)',
                     tension: 0.3
                 },

@@ -15,6 +15,10 @@
     color: var(--text);
 }
 
+.form-errors li {
+    color: red;
+}
+
 form {
     display: flex;
     flex-direction: column;

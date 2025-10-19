@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Your Actions{% endblock %}
 {% block head %}
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/actions.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/actions.css') }}">
 {% endblock %}
 {% block content %}
     <div class="actions-header">
@@ -18,16 +17,16 @@
                     </div>
                     {% if act.notes %}<div class="action-notes">{{ act.notes }}</div>{% endif %}
                     {% if act.properties %}
-                        <details class="action-properties">
-                            <summary>Properties</summary>
-                            <ul>
-                                {% for key, value in act.properties.items() %}
-                                    <li>
-                                        <strong>{{ key|capitalize }}:</strong> {{ value }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </details>
+                    <details class="properties">
+                        <summary>Properties</summary>
+                        <ul>
+                            {% for key, value in act.properties.items() %}
+                                <li>
+                                    <strong>{{ key|capitalize }}:</strong> {{ value }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </details>
                     {% endif %}
                     <div class="action-links">
                         <a class="btn btn-secondary"

@@ -30,14 +30,12 @@ canvas {
     /* needed for Chart.js responsive resizing */
 }
 
+/* Responsive adjustments */
 @media (max-width: 700px) {
     .chart-wrapper {
         height: 250px;
     }
-}
 
-/* Responsive adjustments */
-@media (max-width: 700px) {
     .card.summary {
         padding: 0.8rem;
     }

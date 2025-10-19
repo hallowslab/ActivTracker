@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
     <form method="post" class="timeframe-form">
-        {{ form.hidden_tag() }}
+        {{ form.csrf_token }}
         <label for="days">{{ form.days.label }}</label>
         {{ form.days(size=3) }}
         {{ form.submit() }}

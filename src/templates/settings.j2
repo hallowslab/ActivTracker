@@ -11,7 +11,7 @@
     <section class="form-section">
         <h2>Change Password</h2>
         <form method="post">
-            {{ change_form.hidden_tag() }}
+            {{ form.csrf_token }}
             <div class="form-group">
                 {{ change_form.old_password.label }}
                 {{ change_form.old_password(class="auth-input", autocomplete="current-password") }}
@@ -36,7 +36,7 @@
         <h2>Delete Account</h2>
         <form method="post"
               onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-            {{ delete_form.hidden_tag() }}
+            {{ form.csrf_token }}
             <div class="form-group">
                 {{ delete_form.submit(class="btn btn-danger btn-full") }}
             </div>

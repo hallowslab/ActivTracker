@@ -41,7 +41,7 @@ def new_action():
         db_session.add(action)
         db_session.commit()
 
-        flash(f"Action '{name}' created successfully!", "success")
+        flash(f"Action '{name}' created successfully!", "info")
         return redirect(url_for("action.list_actions"))
 
     return render_template("new_action.j2")
@@ -56,7 +56,7 @@ def edit_action(action_id):
 
     action = db_session.query(Action).filter_by(id=action_id, user_id=user.id).first()
     if not action:
-        flash("Action not found.")
+        flash("Action not found.", "error")
         return redirect(url_for("action.list_actions"))
 
     if request.method == "POST":
@@ -72,7 +72,7 @@ def edit_action(action_id):
             return redirect(url_for("action.list_actions"))
 
         db_session.commit()
-        flash("Action updated successfully!")
+        flash("Action updated successfully!", "info")
         return redirect(url_for("action.list_actions"))
 
     return render_template("edit_action.j2", action=action)
@@ -92,7 +92,7 @@ def edit_activity(log_id):
         .first()
     )
     if not log:
-        flash("Activity not found.")
+        flash("Activity not found.", "error")
         return redirect(url_for("action.list_actions"))
 
     if request.method == "POST":
@@ -105,10 +105,12 @@ def edit_activity(log_id):
             log.properties = properties
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(url_for("action.view_action_history", action_id=log.action_id))
+            return redirect(
+                url_for("action.view_action_history", action_id=log.action_id)
+            )
 
         db_session.commit()
-        flash("Activity updated successfully!")
+        flash("Activity updated successfully!", "info")
         return redirect(url_for("action.view_action_history", action_id=log.action_id))
 
     return render_template("edit_activity.j2", log=log)
@@ -172,4 +174,6 @@ def view_action_history(action_id):
         .all()
     )
 
-    return render_template("view_action_history.j2", action=action, logs=logs, current_user=current_user)
+    return render_template(
+        "view_action_history.j2", action=action, logs=logs, current_user=current_user
+    )

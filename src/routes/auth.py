@@ -21,12 +21,12 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         if db_session.query(User).filter_by(username=username).first():
-            flash("Username exists!")
+            flash("Username exists!", "error")
             return redirect(url_for("auth.register"))
         user = User(username=username, password_hash=generate_password_hash(password))
         db_session.add(user)
         db_session.commit()
-        flash("Registered! Log in now.")
+        flash("Registered! Log in now.", "info")
         return redirect(url_for("auth.login"))
     return render_template("register.j2")
 
@@ -40,9 +40,9 @@ def login():
         user = db_session.query(User).filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):
             session["user_id"] = user.id
-            flash("Logged in!")
+            flash("Logged in!", "info")
             return redirect(url_for("index"))
-        flash("Invalid credentials")
+        flash("Invalid credentials", "error")
         return redirect(url_for("auth.login"))
     return render_template("login.j2")
 
@@ -51,5 +51,5 @@ def login():
 @auth_bp.route("/logout")
 def logout():
     session.clear()
-    flash("Logged out!")
+    flash("Logged out!", "info")
     return redirect(url_for("index"))

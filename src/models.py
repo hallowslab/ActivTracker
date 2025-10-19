@@ -1,6 +1,6 @@
 # models.py
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON, UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from database import Base
 
@@ -24,9 +24,14 @@ class User(Base):
 class Action(Base):
     __tablename__ = "actions"
 
+    # Define the composite unique constraint here
+    __table_args__ = (
+        UniqueConstraint('user_id', 'name', name='uq_user_action_name'),
+    )
+
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
 
     # general notes and metadata
     notes: Mapped[str] = mapped_column(default="", nullable=False)

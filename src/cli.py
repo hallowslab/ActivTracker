@@ -37,6 +37,10 @@ def collect_static():
 
     click.echo(f"Copying static files from {source_dir} to {target_dir}")
 
+    # track stats
+    copied = 0
+    skipped = 0
+
     # Walk source directory and copy files individually
     for root, _, files in os.walk(source_dir):
         for f in files:
@@ -50,7 +54,11 @@ def collect_static():
             try:
                 shutil.copy2(src_file, dst_file)
                 click.echo(f"Copied {rel_path}")
+                copied = copied + 1
             except PermissionError:
                 click.echo(f"Skipped {rel_path} (permission denied)")
+                skipped = skipped + 1
 
-    click.echo("Static files collection complete!")
+    click.echo(
+        f"Static files collection complete! Copied: {copied}, Skipped: {skipped}"
+    )

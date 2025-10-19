@@ -1,30 +1,32 @@
-/* Container */
+/* Container header */
 .actions-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .actions-header h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  color: var(--text);
 }
 
-/* New Action button */
 .new-action-btn {
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--primary);
+  color: #fff;
   padding: 0.5rem 1rem;
-  border: none;
   border-radius: 0.5rem;
   font-weight: bold;
-  cursor: pointer;
   text-decoration: none;
   transition: background-color 0.2s ease, transform 0.1s;
 }
+
+.new-action-btn:hover {
+  background-color: #1e826f;
+}
+
 .new-action-btn:active {
-  background-color: #45a049;
   transform: scale(0.97);
 }
 
@@ -38,22 +40,24 @@
 }
 
 .action-card {
-  background-color: #fff;
+  background-color: var(--background);
   border-radius: 0.75rem;
   padding: 1rem;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
   transition: transform 0.1s ease, box-shadow 0.2s;
 }
+
 .action-card:active {
   transform: scale(0.98);
 }
 
-/* Title + notes */
+/* Title and notes */
 .action-title {
   font-weight: 600;
   font-size: 1.1rem;
   margin: 0 0 0.25rem;
 }
+
 .action-notes {
   color: #666;
   font-style: italic;
@@ -61,69 +65,63 @@
   margin-bottom: 0.5rem;
 }
 
-/* Action buttons */
-.action-links {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.action-links a {
-  background-color: #f1f1f1;
-  color: #333;
-  padding: 0.4rem 0.7rem;
-  border-radius: 0.4rem;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: background-color 0.15s;
-}
-.action-links a:hover {
-  background-color: #e0e0e0;
-}
-.action-links a:active {
-  background-color: #d5d5d5;
-}
-
+/* Properties block */
 .action-properties {
   background: #f8f9fa;
-  border-radius: 0.5rem;
-  margin: 0.5rem 0 1rem;
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--primary);
+  padding: 0.75em 1em;
+  border-radius: 8px;
+  margin: 0.5em 0 1em;
+  font-size: 0.9em;
 }
 
 .action-properties summary {
-  cursor: pointer;
   font-weight: 600;
-  color: #007bff;
-  list-style: none;
-}
-
-.action-properties[open] summary {
-  color: #0056b3;
-}
-
-.action-properties summary::-webkit-details-marker {
-  display: none; /* hides default arrow */
-}
-
-.action-properties summary::after {
-  content: "▾";
-  float: right;
-  transition: transform 0.2s;
-}
-
-.action-properties[open] summary::after {
-  transform: rotate(180deg);
+  cursor: pointer;
 }
 
 .action-properties ul {
   list-style: none;
-  padding: 0.5rem 0 0;
-  margin: 0;
+  padding-left: 0;
+  margin: 0.25em 0 0;
 }
 
 .action-properties li {
   margin-bottom: 0.25em;
+}
+
+/* Action buttons */
+.action-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.action-links a,
+.action-links button {
+  background-color: var(--secondary);
+  color: var(--text);
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.4rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.action-links a:hover,
+.action-links button:hover {
+  background-color: #e0e0e0;
+}
+
+.action-links button.btn-danger {
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.action-links button.btn-danger:hover {
+  background-color: #d32f2f;
 }
 
 /* Empty state */
@@ -133,7 +131,10 @@
   margin-top: 2rem;
 }
 
-/* Desktop two-column grid */
+/* Responsive two-column grid for larger screens */
 @media (min-width: 700px) {
-    .action-list { display: grid; grid-template-columns: 1fr 1fr; }
+  .action-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 }

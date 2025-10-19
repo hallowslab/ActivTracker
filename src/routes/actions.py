@@ -16,7 +16,7 @@ def list_actions():
     assert user is not None  # For type checking safety
 
     actions = db_session.query(Action).filter_by(user_id=user.id).all()
-    return render_template("actions.j2", actions=actions)
+    return render_template("actions.j2", actions=actions, current_user=current_user)
 
 
 # Create a new action
@@ -48,7 +48,7 @@ def new_action():
 
 
 # Edit action
-@action_bp.route("/<int:action_id>/edit", methods=["GET", "POST"])
+@action_bp.route("/edit/action/<int:action_id>", methods=["GET", "POST"])
 @login_required
 def edit_action(action_id):
     user = current_user()
@@ -69,7 +69,7 @@ def edit_action(action_id):
             action.properties = properties
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(url_for("action.new_action"))
+            return redirect(url_for("action.list_actions"))
 
         db_session.commit()
         flash("Action updated successfully!")
@@ -79,7 +79,7 @@ def edit_action(action_id):
 
 
 # Edit activity
-@action_bp.route("/<int:log_id>/edit", methods=["GET", "POST"])
+@action_bp.route("/edit/log/<int:log_id>", methods=["GET", "POST"])
 @login_required
 def edit_activity(log_id):
     user = current_user()
@@ -97,7 +97,7 @@ def edit_activity(log_id):
 
     if request.method == "POST":
         log.delta = request.form["delta"]
-        log.note = request.form.get("note", "")
+        log.notes = request.form.get("notes", "")
         properties_raw = request.form.get("properties", "{}")
 
         try:
@@ -105,7 +105,7 @@ def edit_activity(log_id):
             log.properties = properties
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(url_for("action.new_action"))
+            return redirect(url_for("action.view_action_history", action_id=log.action_id))
 
         db_session.commit()
         flash("Activity updated successfully!")
@@ -172,4 +172,4 @@ def view_action_history(action_id):
         .all()
     )
 
-    return render_template("view_action_history.j2", action=action, logs=logs)
+    return render_template("view_action_history.j2", action=action, logs=logs, current_user=current_user)

@@ -1,136 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ action.name }} - Activity Details{% endblock %}
 {% block head %}
-    <style>
-        .action-header {
-            background: #4CAF50;
-            color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .action-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
-        .action-header p {
-            margin: 0.25rem 0 0;
-            font-size: 0.95rem;
-        }
-
-        .properties-box,
-        .logs-list {
-            background: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .properties-box pre {
-            background: #f8f8f8;
-            border-radius: 0.25rem;
-            padding: 0.5rem;
-            overflow-x: auto;
-        }
-
-        .edit-btn {
-            display: inline-block;
-            background-color: #0d6efd;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            text-decoration: none;
-            transition: background-color 0.2s ease;
-        }
-
-        .edit-btn:hover {
-            background-color: #0b5ed7;
-        }
-
-        .log-entry {
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            padding: 0.75em 1em;
-            margin-bottom: 0.75em;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .log-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9em;
-            color: #555;
-        }
-
-        .log-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .log-delta {
-            color: #198754;
-            font-weight: 600;
-        }
-
-        .log-note {
-            margin: 0.5em 0;
-            font-style: italic;
-            color: #333;
-        }
-
-        .edit-btn {
-            background: transparent;
-            color: #0d6efd;
-            border: 1px solid #0d6efd;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.8em;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .edit-btn:hover {
-            background-color: #0d6efd;
-            color: white;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .action-buttons a {
-            text-decoration: none;
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.3rem;
-            font-size: 0.95rem;
-            text-align: center;
-        }
-
-        .action-buttons a.secondary {
-            background-color: #ccc;
-            color: #333;
-        }
-
-        @media (max-width: 600px) {
-            .log-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.2rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/view_action_history.css') }}">
 {% endblock %}
 {% block content %}
     <div class="action-header">
@@ -140,6 +12,7 @@
     <div class="action-buttons">
         <a href="{{ url_for('action.log_activity', action_id=action.id) }}">Add Log</a>
         <a href="{{ url_for("action.list_actions") }}" class="secondary">← Back</a>
+        <button class="btn btn-danger" onclick="deleteAction({{ action.id }})">Delete Action</button>
     </div>
     {% if action.properties %}
         <div class="properties-box">
@@ -151,13 +24,14 @@
     <div class="logs-list">
         {% if logs %}
             {% for log in logs %}
-                <div class="log-entry">
+                <div class="log-entry" id="log-{{ log.id }}">
                     <div class="log-meta">
                         <span>{{ log.timestamp.strftime("%d-%m-%Y %H:%M:%S") }}</span>
                         <div class="log-actions">
                             <span class="log-delta">▲{{ log.delta }}</span>
                             <a href="{{ url_for('action.edit_activity', log_id=log.id) }}"
                                class="edit-btn">Edit</a>
+                            <button class="btn btn-sm btn-danger" onclick="deleteLog({{ log.id }})">Delete</button>
                         </div>
                     </div>
                     {% if log.note %}<div class="log-note">{{ log.note }}</div>{% endif %}
@@ -168,4 +42,41 @@
             <p>No logs yet. Add one!</p>
         {% endif %}
     </div>
+    <script>
+const apiToken = "{{ current_user().api_token }}";
+
+async function deleteAction(actionId) {
+    if (!confirm('Are you sure you want to delete this action and all its logs?')) return;
+
+    const response = await fetch(`/api/actions/${actionId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${apiToken}` }
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+        alert(data.message);
+        window.location.href = '{{ url_for("action.list_actions") }}';
+    } else {
+        alert(data.error);
+    }
+}
+
+async function deleteLog(logId) {
+    if (!confirm('Are you sure you want to delete this log?')) return;
+
+    const response = await fetch(`/api/logs/${logId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${apiToken}` }
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+        alert(data.message);
+        document.getElementById(`log-${logId}`).remove();
+    } else {
+        alert(data.error);
+    }
+}
+    </script>
 {% endblock %}

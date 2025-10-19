@@ -1,29 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Edit Activity{% endblock %}
 {% block content %}
-    <div class="form-container">
-        <h1>Edit Activity</h1>
-        <form method="post">
-            <div>
-                <label for="delta">Delta (amount)</label>
-                <input type="number"
-                       id="delta"
-                       name="delta"
-                       value="{{ log.delta }}"
-                       step="any"
-                       required>
-            </div>
-            <div>
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes">{{ log.notes or "" }}</textarea>
-            </div>
-            <div>
-                <label for="properties">Properties (JSON)</label>
-                <textarea id="properties" name="properties">{{ log.properties or "" }}</textarea>
-            </div>
-            <button type="submit">Save Changes</button>
-            <a href="{{ url_for('action.view_action_history', action_id=log.action_id) }}"
-               class="cancel-link">Cancel</a>
-        </form>
-    </div>
+<div class="form-container">
+    <h1>Edit Activity</h1>
+    <form method="post">
+        {{ form.csrf_token }}
+        <div>
+            {{ form.delta.label }}
+            {{ form.delta(step="any", class="input-number") }}
+            {% if form.delta.errors %}
+                <div class="error">{{ form.delta.errors[0] }}</div>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.notes.label }}
+            {{ form.notes(rows="3", class="input-textarea") }}
+        </div>
+        <div>
+            {{ form.properties.label }}
+            {{ form.properties(rows="6", class="input-textarea") }}
+        </div>
+        <div class="actions">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('action.view_action_history', action_id=log.action_id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

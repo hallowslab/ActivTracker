@@ -4,20 +4,26 @@
     <div class="form-container">
         <h1>Edit Action</h1>
         <form method="post">
+            {{ form.csrf_token }}
             <div>
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" value="{{ action.name }}" required>
+                {{ form.name.label }}
+                {{ form.name(class="input-text") }}
+                {% if form.name.errors %}
+                    <div class="error">{{ form.name.errors[0] }}</div>
+                {% endif %}
             </div>
             <div>
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes">{{ action.notes or "" }}</textarea>
+                {{ form.notes.label }}
+                {{ form.notes(rows="4", class="input-textarea") }}
             </div>
             <div>
-                <label for="properties">Properties (JSON)</label>
-                <textarea id="properties" name="properties">{{ action.properties or "" }}</textarea>
+                {{ form.properties.label }}
+                {{ form.properties(rows="6", class="input-textarea") }}
             </div>
-            <button type="submit">Save Changes</button>
-            <a href="{{ url_for("action.list_actions") }}" class="cancel-link">Cancel</a>
+            <div class="actions">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('action.list_actions') }}" class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
 {% endblock %}

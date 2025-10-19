@@ -40,5 +40,5 @@
 }
 
 .btn-danger:hover {
-    background-color: darken(var(--danger), 10%);
+    background-color: color-mix(in srgb, var(--danger) 90%, black);
 }

@@ -2,7 +2,8 @@
 
 /* Summary container */
 .summary-container {
-    max-width: 700px;
+    max-width: 80%;
+    width: 80%;
     margin: 2rem auto;
     padding: 1.5rem;
     background: #fff;

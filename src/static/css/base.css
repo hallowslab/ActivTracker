@@ -14,7 +14,7 @@
 /* --- Body --- */
 body {
 font-family: sans-serif;
-max-width: 70vw;
+max-width: 80vw;
 margin: 0 auto;
 padding: 0;
 display: flex;
@@ -154,7 +154,7 @@ color: #000;
 @media (min-width: 600px) {
 main {
 padding: 2rem 2rem;
-max-width: 80%;
+max-width: 90%;
 margin: 0 auto;
 /* centers the main block */
 }
@@ -164,8 +164,11 @@ body {
 max-width: 100%;
 margin: auto;
 }
+header {
+    padding: .5rem;
+}
 main {
-margin: auto;
+margin: 1rem 1rem 1rem 0.3rem;
 width: 80%;
 max-width: 100%;
 }
@@ -173,5 +176,11 @@ max-width: 100%;
 margin: 0 auto;
 padding: 0 0.5rem;
 /* optional small padding */
+}
+}
+
+@media (max-height: 600px) {
+header {
+    padding: .5rem;
 }
 }

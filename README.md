@@ -1,6 +1,6 @@
 # ActivTracker
 
-A simple, lightweight activity tracking web app built with <code>Flask</code> and <code>SQLAlchemy</code>.
+A simple, lightweight activity tracking web app built with `Flask` and `SQLAlchemy`.
 It allows you to create actions (like “Run”, “Study”, “Workout”) and log entries with notes, and custom properties, it also adds an automatic timestamp.
 You can then view trends and summaries through a visual dashboard.
 
@@ -47,32 +47,31 @@ You can then view trends and summaries through a visual dashboard.
 - nginx (optional, recommended)
 
 
-### 1. Clone the repository
-<code>
+### Clone the repository
+```
 git clone https://github.com/yourusername/ActivTracker.git
-cd ActivTracker
-</code>
+cd ActivTracker/src
+```
 
-### 2. Create virtual environment & Install dependencies (UV example)
-<code>
-uv sync
-</code>
+### Create virtual environment & Install dependencies (UV example)
+`uv sync`
 
-### 3. Initialize the database
-<code>
-uv run python create_db.py
-</code>
+### Initialize the database
+`uv run python create_db.py`
 
-### 4. Configure .env
+### Configure .env
 - Create a .env file inside the src directory by copying .env.template, then modify the following variables:
   - FLASK_ENV="development" - set to "production"
   - STATIC_ROOT=/var/www/activ/static - set to the root of where you will serve static assets with nginx
 
 This will create a local SQLite database and initialize all tables.
 
-### 4. Setup nginx
+### Generate a .secret
+`uv run python generate_secret.py`
+
+### Setup nginx
 - Modify activitytracker.nginx to replace STATIC_ROOT with your actual path
-- Copy the modified file to to /etc/nginx/sites-available/activitytracker
+- Copy the modified file to to `/etc/nginx/sites-available/activitytracker`
 - Enable it with:
   `sudo ln -s /etc/nginx/sites-available/activitytracker /etc/nginx/sites-enabled/`
 - Enable nginx with:
@@ -100,10 +99,7 @@ This will create a local SQLite database and initialize all tables.
 ## API Access
 
 To use the REST API, generate a token first via the web UI, then send requests like:
-
-<code>
-curl -H "Authorization: Bearer YOUR_API_TOKEN" http://localhost:5000/api/actions
-</code>
+  - `curl -H "Authorization: Bearer YOUR_API_TOKEN" http://localhost:8000/api/actions`
 
 Tokens automatically expire after their configured lifetime.
 
@@ -111,32 +107,25 @@ Tokens automatically expire after their configured lifetime.
 
 ## Dashboard
 
-Visit <code>/dashboard/summary</code> to view graphical summaries of your activity trends.
+### General summary
+Visit `/dashboard/` to view graphical summaries of your actions and Charts with trends.
+- Summary of all actions
+- Trends of each individual action
+
+### Activity summary
+Visit `/dashboard/summary/activity` to view Charts of your actions and their trends.
 - Select actions to visualize.
 - Switch between day, week, and month views.
-- See trendlines showing increases or decreases in activity over time.
-
----
-
-## Command Line Tools
-
-A small management script (<code>generate_secret.py</code>) is included to generate a <code>.secret</code> file containing a secure key:
-
-<code>
-uv run python generate_secret.py
-</code>
+- See trendlines showing increases or decreases in actions over time.
 
 ---
 
 ## Testing
 
 You can generate fake actions and logs to test summaries and graphs:
+  - `uv run flask create-test-data USERNAME NUM_ACTIONS DAYS`
 
-<code>
-uv run flask create-test-data USERNAME NUM_ACTIONS DAYS
-</code>
-
-This will populate your database with random activity data:
+This will populate your database with random actions data:
     - `USERNAME`: The user that will own the actions **THE USER MUST EXIST IN THE DATABASE**
     - `NUM_ACTIONS`: specify the number of actions to create
     - `DAYS` specifies how many days of activities to create.
@@ -146,7 +135,7 @@ This will populate your database with random activity data:
 ## Future Ideas
 
 - Support multiple users sharing dashboards
-- Export activity data (CSV/JSON)
+- Export action data (CSV/JSON)
 - Add mobile-friendly responsive design(WIP)
 
 ---

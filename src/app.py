@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_wtf.csrf import CSRFProtect
 
 from cli import collect_static, create_test_data
@@ -34,6 +34,11 @@ app.cli.add_command(collect_static)
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+
+@app.route("/")
+def index():
+    return redirect(url_for("dashboard.index"))
 
 
 def load_secret(path: Path = Path(".secret")):

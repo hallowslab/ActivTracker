@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 scripts/render_templates.py
 
@@ -12,6 +11,7 @@ Usage:
   uv run python scripts/render_templates.py --templates deploy/templates --out deploy/rendered --env src/.env
   uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.ssl.template --out deploy/rendered --env src/.env
 """
+
 import argparse
 import os
 import re

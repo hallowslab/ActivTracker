@@ -1,12 +1,16 @@
-.PHONY: all render ssl static db secret nginx systemd clean
+.PHONY: all check render ssl static db secret nginx systemd clean
 
 include .env
 
-all: render ssl static db secret nginx systemd
+all: check render ssl static db secret nginx systemd
+
+check:
+	@command -v openssl >/dev/null 2>&1 || { echo "ERROR: openssl not installed. Please install openssl first."; exit 1; }
+	@command -v nginx >/dev/null 2>&1 || { echo "ERROR: nginx not installed. Please install nginx first."; exit 1; }
 
 render:
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.$(if $(ENABLE_SSL),ssl,http).template --out deploy/rendered --env src/.env
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env src/.env
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.$(if $(ENABLE_SSL),ssl,http).template --out deploy/rendered --env .env
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env .env
 
 ssl:
 ifeq ($(ENABLE_SSL),true)

@@ -11,6 +11,9 @@ check:
 render:
 	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.$(if $(ENABLE_SSL),ssl,http).template --out deploy/rendered --env .env
 	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env .env
+ifeq ($(ENABLE_SSL),true)
+	mv deploy/rendered/activitytracker.nginx.ssl deploy/rendered/activitytracker.nginx
+endif
 
 ssl:
 ifeq ($(ENABLE_SSL),true)

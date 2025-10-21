@@ -84,7 +84,7 @@ class RegisterForm(FlaskForm):
         validators=[DataRequired()],
         render_kw={"autocomplete": "new-password", "class": "auth-input"},
     )
-    submit = SubmitField("Login", render_kw={"class": "btn btn-primary"})
+    submit = SubmitField("Register", render_kw={"class": "btn btn-primary"})
 
 
 class NewActionForm(FlaskForm):

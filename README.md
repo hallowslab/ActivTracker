@@ -1,7 +1,8 @@
 # ActivTracker
 
 A simple, lightweight activity tracking web app built with `Flask` and `SQLAlchemy`.
-It allows you to create actions (like “Run”, “Study”, “Workout”) and log entries with notes, and custom properties, it also adds an automatic timestamp.
+It allows you to create actions (like “Run”, “Study”, “Workout”),
+  log entries with notes, and custom properties, it also adds an automatic timestamp.
 You can then view trends and summaries through a visual dashboard.
 
 ---
@@ -41,35 +42,43 @@ You can then view trends and summaries through a visual dashboard.
 ## Native Setup
 
 ### Dependencies
+
 - Python 3.13
 - uv(optional, recommended)
 - systemd
 - nginx (optional, recommended)
 
-
 ### Clone the repository
-```
+
+```sh
 git clone https://github.com/yourusername/ActivTracker.git
 cd ActivTracker/src
 ```
 
 ### Create virtual environment & Install dependencies (UV example)
+
 `uv sync`
 
 ### Initialize the database
+
 `uv run python create_db.py`
 
 ### Configure .env
-- Create a .env file inside the src directory by copying .env.template, then modify the following variables:
+
+- Create a .env file inside the src directory by copying .env.template,
+  then modify the following variables:
   - FLASK_ENV="development" - set to "production"
-  - STATIC_ROOT=/var/www/activ/static - set to the root of where you will serve static assets with nginx
+  - STATIC_ROOT=/var/www/activ/static - set to the root of where you will
+    serve static assets with nginx
 
 This will create a local SQLite database and initialize all tables.
 
 ### Generate a .secret
+
 `uv run python generate_secret.py`
 
 ### Setup nginx
+
 - Modify activitytracker.nginx to replace STATIC_ROOT with your actual path
 - Copy the modified file to to `/etc/nginx/sites-available/activitytracker`
 - Enable it with:
@@ -84,6 +93,7 @@ This will create a local SQLite database and initialize all tables.
     `uv run flask collect-static`
 
 ### Setup systemd unit
+
 - Modify activitytracker.service
   - replace USER with the user that will run the app
   - Change /home/USER/ActivTracker/src if you have the app outside the user's home directory (will need write perms)
@@ -99,7 +109,8 @@ This will create a local SQLite database and initialize all tables.
 ## API Access
 
 To use the REST API, generate a token first via the web UI, then send requests like:
-  - `curl -H "Authorization: Bearer YOUR_API_TOKEN" http://localhost:8000/api/actions`
+
+- `curl -H "Authorization: Bearer YOUR_API_TOKEN" http://localhost:8000/api/actions`
 
 Tokens automatically expire after their configured lifetime.
 
@@ -108,12 +119,16 @@ Tokens automatically expire after their configured lifetime.
 ## Dashboard
 
 ### General summary
+
 Visit `/dashboard/` to view graphical summaries of your actions and Charts with trends.
+
 - Summary of all actions
 - Trends of each individual action
 
 ### Activity summary
+
 Visit `/dashboard/summary/activity` to view Charts of your actions and their trends.
+
 - Select actions to visualize.
 - Switch between day, week, and month views.
 - See trendlines showing increases or decreases in actions over time.
@@ -123,7 +138,8 @@ Visit `/dashboard/summary/activity` to view Charts of your actions and their tre
 ## Testing
 
 You can generate fake actions and logs to test summaries and graphs:
-  - `uv run flask create-test-data USERNAME NUM_ACTIONS DAYS`
+
+- `uv run flask create-test-data USERNAME NUM_ACTIONS DAYS`
 
 This will populate your database with random actions data:
     - `USERNAME`: The user that will own the actions **THE USER MUST EXIST IN THE DATABASE**

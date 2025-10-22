@@ -6,7 +6,9 @@ margin-bottom: 1rem;
 li.success {
 color: var(--info);
 }
-li.error,
 li.warning {
+color: var(--warning);
+}
+li.error{
 color: var(--danger);
 }

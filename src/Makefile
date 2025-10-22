@@ -9,11 +9,13 @@ check:
 	@command -v nginx >/dev/null 2>&1 || { echo "ERROR: nginx not installed. Please install nginx first."; exit 1; }
 
 render:
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.$(if $(ENABLE_SSL),ssl,http).template --out deploy/rendered --env .env
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env .env
 ifeq ($(ENABLE_SSL),true)
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.ssl.template --out deploy/rendered --env src/.env
 	mv deploy/rendered/activitytracker.nginx.ssl deploy/rendered/activitytracker.nginx
+else
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.http.template --out deploy/rendered --env src/.env
 endif
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env src/.env
 
 ssl:
 ifeq ($(ENABLE_SSL),true)

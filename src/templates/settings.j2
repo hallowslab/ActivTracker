@@ -16,14 +16,17 @@
                 <div class="form-group">
                     {{ change_form.old_password.label }}
                     {{ change_form.old_password(class="auth-input", autocomplete="current-password") }}
+                    {% for error in change_form.old_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
                 </div>
                 <div class="form-group">
                     {{ change_form.new_password.label }}
                     {{ change_form.new_password(class="auth-input", autocomplete="new-password") }}
+                    {% for error in change_form.new_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
                 </div>
                 <div class="form-group">
                     {{ change_form.confirm_password.label }}
                     {{ change_form.confirm_password(class="auth-input", autocomplete="new-password") }}
+                    {% for error in change_form.confirm_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
                 </div>
                 <div class="form-group">{{ change_form.submit(class="btn btn-primary btn-full") }}</div>
             </form>

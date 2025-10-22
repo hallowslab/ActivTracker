@@ -99,7 +99,7 @@ def main():
         text = tmpl.read_text(encoding="utf-8")
         rendered = render_text(text, env)
         out_name = tmpl.name
-        out_name = out_name.replace(".template", "")
+        out_name = out_name.removesuffix(".template")
         out_path = out_dir / out_name
         out_path.write_text(rendered, encoding="utf-8")
         print(f"Rendered {tmpl} -> {out_path}")

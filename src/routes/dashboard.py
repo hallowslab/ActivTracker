@@ -18,7 +18,7 @@ dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 def index():
     """
     Render the dashboard showing per-action activity time series and summary for a selectable timeframe.
-    
+
     Determines the timeframe (default 30 days, overridable via TimeframeForm or ?days query parameter), gathers the current user's actions, and for each action builds a time series of dates and activity counts plus a linear trend line. Aggregates total actions and per-action summary counts, computes the percentage change between the first and last seven-day totals across all actions, and returns the rendered "dashboard.j2" template populated with:
     - activity_data: list of dicts with keys `name`, `values`, `trend_line`, `labels`
     - total_actions: total count across all actions and days
@@ -120,7 +120,7 @@ def index():
 def activity_summary():
     """
     Render an activity summary page for a selected user action over a specified period.
-    
+
     Builds and validates an ActivitySummaryForm (from request values), populates its action choices from the current user's actions, defaults selection and days when missing, computes a per-day activity timeseries and a linear trend line for the chosen action, and returns the rendered "activity_summary.j2" template with the form and a data dict containing:
     - action: the selected Action object
     - actions: list of the user's Action objects
@@ -128,9 +128,9 @@ def activity_summary():
     - _values: list of activity deltas
     - days: number of days used for the timeseries
     - trend_line: list of trend values matching labels
-    
+
     If the user has no actions, flashes "No actions found" and redirects to action.list_actions. If the selected action is not found, flashes "Action not found" and redirects to action.list_actions.
-    
+
     Returns:
         The rendered template response for the activity summary page or a redirect response when no action is available.
     """
@@ -154,6 +154,14 @@ def activity_summary():
     if not form.days.data:
         form.days.data = 30
 
+    if request.method == "POST":
+        if not form.validate_on_submit():
+            flash("Invalid input.", "error")
+            return render_template("activity_summary.j2", form=form, data=None)
+    else:
+        if not form.validate():
+            form.days.data = 30
+
     # Extract values
     action_id = form.action_id.data
     days = form.days.data
@@ -168,12 +176,13 @@ def activity_summary():
     labels = [entry["date"] for entry in timeseries]
     values = [entry["delta"] for entry in timeseries]
 
-    import numpy as np
-
     x = np.arange(len(values))
     y = np.array(values)
-    slope, intercept = np.polyfit(x, y, 1)
-    trend_line = (intercept + slope * x).tolist()
+    if len(values) > 1:
+        slope, intercept = np.polyfit(x, y, 1)
+        trend_line = (intercept + slope * x).tolist()
+    else:
+        trend_line = values
 
     data = {
         "action": action,

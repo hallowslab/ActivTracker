@@ -7,7 +7,14 @@ from models import Action, ActivityLog
 
 def generate_fake_data(user_id: int, num_actions: int = 3, days: int = 30):
     """
-    Generates fake actions and activity logs for testing
+    Create test Action records for a user and generate ActivityLog entries spanning recent days.
+    
+    Creates up to `num_actions` new Action rows for the given user (ensuring each action name is unique among the user's existing actions), assigns each action a small random properties dictionary, and inserts `days` of ActivityLog entries per action with randomized `delta` values. Changes are committed to the database; a short summary is printed.
+    
+    Parameters:
+        user_id (int): ID of the user for whom actions and logs are created.
+        num_actions (int): Number of test actions to create (default 3).
+        days (int): Number of most-recent days to generate logs for each action (default 30).
     """
     _PROPS = ["distance", "time", "quantity"]
 

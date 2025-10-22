@@ -19,6 +19,14 @@ def current_user():
 # Register route
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
+    """
+    Handle the user registration form: create a new user when the submitted data is valid, or render the registration page.
+    
+    On successful registration, adds the new user to the database and redirects to the login page. If the submitted username already exists, flashes an error and redirects back to the registration page. If the form is not submitted or fails validation, renders the registration template with the form instance.
+    
+    Returns:
+        A Flask response — a redirect to the login page on successful registration, a redirect back to the registration page when the username exists, or the rendered registration template when displaying the form.
+    """
     form = RegisterForm()
     if form.validate_on_submit():
         assert form.username.data is not None
@@ -41,6 +49,14 @@ def register():
 # Login route
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+    """
+    Authenticate credentials submitted via the login form and establish a user session.
+    
+    If the submitted form is valid and credentials match a user, stores the user's id in the session and redirects to the dashboard index. If credentials are invalid, redirects back to the login page with an error flash. On initial GET or when form validation fails, renders the login template with the form.
+    
+    Returns:
+        A Flask response object — either a redirect to the dashboard on successful login, a redirect back to the login page on failed authentication, or the rendered login template when showing the form.
+    """
     form = LoginForm()
     if form.validate_on_submit():
         assert form.username.data is not None
@@ -63,6 +79,12 @@ def login():
 # Logout route
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
+    """
+    Clear the current session, flash a logout confirmation message, and redirect to the dashboard index.
+    
+    Returns:
+        Response: A redirect response to the dashboard index.
+    """
     session.clear()
     flash("Logged out!", "info")
     return redirect(url_for("dashboard.index"))

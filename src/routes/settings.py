@@ -10,12 +10,25 @@ settings_bp = Blueprint("settings", __name__, url_prefix="/settings")
 
 
 def logout_user():
+    """
+    Clear all data from the current user's session.
+    
+    This effectively logs the user out by removing all session keys and values.
+    """
     session.clear()
 
 
 @settings_bp.route("/", methods=["GET", "POST"])
 @login_required
 def account_settings():
+    """
+    Render and handle the account settings page, allowing the current user to change their password or delete their account.
+    
+    If the change-password form is submitted and valid, verifies the old password, updates the stored password hash on success, commits the database session, and flashes a success or error message. If the delete-account form is submitted and valid, verifies the current password, clears the session, deletes the user record from the database if present, commits the session, flashes a success or error message, and redirects to the login page on successful deletion.
+    
+    Returns:
+        A Flask response: the rendered "settings.j2" template with `change_form` and `delete_form`, or a redirect to the settings or login page after account deletion.
+    """
     user = current_user()
     assert user is not None
 

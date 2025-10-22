@@ -42,10 +42,14 @@ def new_action():
     if form.validate_on_submit():
         name = form.name.data
         notes = form.notes.data
-        properties_raw = form.properties.data
+        properties_raw = form.properties.data or "{}"
+        properties = {}
 
         try:
-            properties = json.loads(properties_raw) if properties_raw else {}
+            properties = json.loads(properties_raw.strip())
+            if not isinstance(properties, dict):
+                flash("Properties must be a JSON object.", "error")
+                return render_template("new_action.j2", form=form)
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
             return redirect(url_for("action.new_action"))
@@ -98,7 +102,11 @@ def edit_action(action_id):
 
         properties_raw = form.properties.data or "{}"
         try:
-            action.properties = json.loads(properties_raw)
+            parsed = json.loads(properties_raw.strip())
+            if not isinstance(parsed, dict):
+                flash("Properties must be a JSON object.", "error")
+                return render_template("edit_action.j2", form=form, action=action)
+            action.properties = parsed
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
             return render_template("edit_action.j2", form=form, action=action)

@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timezone
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy.exc import IntegrityError
 
 from auth_helpers import current_user, login_required
 from database import db_session
@@ -28,9 +29,9 @@ def list_actions():
 def new_action():
     """
     Create a new Action belonging to the current authenticated user from submitted form data.
-    
+
     On valid submission, parses the form's `properties` field as JSON (empty string -> {}), creates and persists the Action, flashes a success message, and redirects to the actions list. If the properties JSON is invalid, flashes an error and redirects back to the new-action page. On GET or when validation fails, renders the "new_action.j2" template with the form for user correction.
-    
+
     Returns:
         A Flask response: a redirect (to the actions list on success or back to the new-action page on JSON error) or the rendered "new_action.j2" template when displaying the form or on validation failure.
     """
@@ -51,7 +52,13 @@ def new_action():
 
         action = Action(name=name, user_id=user.id, notes=notes, properties=properties)
         db_session.add(action)
-        db_session.commit()
+
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors = "Duplicate action name."
+            return render_template("new_action.j2", form=form)
 
         flash(f"Action '{name}' created successfully!", "info")
         return redirect(url_for("action.list_actions"))
@@ -65,12 +72,12 @@ def new_action():
 def edit_action(action_id):
     """
     Render and handle the edit form for an Action owned by the current user.
-    
+
     Validates submitted form data, updates the Action's `name`, `notes`, and `properties` (parsed from JSON), commits changes to the database on success, and flashes status messages. If the Action is not found the user is redirected to the actions list. If `properties` contains invalid JSON the form is re-rendered with an error and no database commit is performed. On GET the `properties` field is pre-populated with pretty-printed JSON when appropriate.
-    
+
     Parameters:
         action_id (int|str): Identifier of the Action to edit.
-    
+
     Returns:
         A Flask response that either renders the edit form (with the form and action) or redirects to the actions list.
     """
@@ -96,7 +103,13 @@ def edit_action(action_id):
             flash("Invalid JSON in properties", "error")
             return render_template("edit_action.j2", form=form, action=action)
 
-        db_session.commit()
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors = "Duplicate action name."
+            return render_template("new_action.j2", form=form)
+
         flash("Action updated successfully!", "info")
         return redirect(url_for("action.list_actions"))
 
@@ -117,15 +130,15 @@ def edit_action(action_id):
 def edit_activity(log_id):
     """
     Render and process the edit activity form for an ActivityLog owned by the current user.
-    
+
     Parameters:
         log_id (int): ID of the ActivityLog to edit.
-    
+
     Behavior:
         - If no ActivityLog with the given ID exists for the current user, flashes an error and redirects to the actions list.
         - On valid form submission, updates the log's delta, notes (defaults to empty string), and properties (parsed from JSON); on JSON parse error flashes an error and re-renders the edit template.
         - Commits changes to the database on successful update and flashes a success message.
-    
+
     Returns:
         A Flask response: redirects to the actions list when the log is not found, redirects to the related action's history after a successful update, or renders the edit_activity.j2 template for GET requests, validation failures, or JSON parse errors.
     """
@@ -177,10 +190,10 @@ def edit_activity(log_id):
 def log_activity(action_id):
     """
     Render the log-activity form for an action and create a new ActivityLog when the submitted form is valid.
-    
+
     Parameters:
         action_id (int): ID of the action to log the activity for.
-    
+
     Returns:
         A Flask response: on GET or when the form is invalid, renders the log activity template with the form and action; on successful submission, redirects to the action's history view; if the action does not exist, redirects to the actions list; if the properties field contains invalid JSON, redirects back to the log page.
     """

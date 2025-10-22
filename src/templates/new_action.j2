@@ -1,27 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Create Action{% endblock %}
-{% block head %}
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/form.css') }}">
-{% endblock %}
+{% block title %}
+    Create Action
+{% endblock title %}
 {% block content %}
     <div class="form-container">
         <h1>Create New Action</h1>
         <form method="post">
+            {{ form.csrf_token }}
             <div>
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" required>
+                {{ form.name.label }}
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.name.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
             </div>
             <div>
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes"></textarea>
+                {{ form.notes.label }}
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.notes.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
             </div>
             <div>
-                <label for="properties">Properties (JSON)</label>
-                <textarea id="properties" name="properties" placeholder='{"distance": "km"}'></textarea>
+                {{ form.properties.label }}
+                {{ form.properties }}
+                {% if form.properties.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.properties.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
             </div>
-            <button type="submit">Create</button>
-            <a href="{{ url_for("action.list_actions") }}" class="cancel-link">Back</a>
+            <div>{{ form.submit(class="btn btn-primary") }}</div>
+            <a href="{{ url_for('action.list_actions') }}" class="cancel-link">Back</a>
         </form>
     </div>
-{% endblock %}
+{% endblock content %}

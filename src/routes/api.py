@@ -1,10 +1,11 @@
-from flask import Blueprint, request, jsonify
-from database import db_session
-from models import Action, ActivityLog
 from datetime import datetime, timezone
 
-from auth_helpers import user_from_token, token_required
+from flask import Blueprint, jsonify, request
+
+from auth_helpers import token_required, user_from_token
+from database import db_session
 from model_helpers import summarize_actions
+from models import Action, ActivityLog
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -71,6 +72,20 @@ def delete_log(log_id):
 @api_bp.route("/actions/<int:action_id>/logs", methods=["POST"])
 @token_required
 def api_add_log(action_id):
+    """
+    Create a new ActivityLog for the specified action belonging to the authenticated user.
+    
+    Expects a JSON payload with optional fields:
+    - "notes" (string): note text to attach to the log (defaults to "").
+    - "delta" (int|str): numeric delta for the log (defaults to 1; converted to int).
+    - "properties" (dict): additional properties (defaults to {}).
+    
+    Parameters:
+        action_id (int): ID of the action to attach the log to; the action must belong to the authenticated user.
+    
+    Returns:
+        A Flask response: on success returns JSON {"status": "ok", "message": "Logged '<action.name>'"} with HTTP 201; if the action does not exist returns JSON {"error": "Action not found"} with HTTP 404.
+    """
     user = user_from_token()
     assert user is not None
 
@@ -79,7 +94,7 @@ def api_add_log(action_id):
         return jsonify({"error": "Action not found"}), 404
 
     data = request.get_json()
-    note = data.get("note", "")
+    note = data.get("notes", "")
     delta = int(data.get("delta", 1))
     properties = data.get("properties", {})
 

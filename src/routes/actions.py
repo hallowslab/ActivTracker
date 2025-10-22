@@ -1,9 +1,13 @@
 import json
 from datetime import datetime, timezone
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from models import Action, ActivityLog
+
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy.exc import IntegrityError
+
+from auth_helpers import current_user, login_required
 from database import db_session
-from auth_helpers import login_required, current_user
+from forms import EditActionForm, EditActivityForm, LogActivityForm, NewActionForm
+from models import Action, ActivityLog
 
 action_bp = Blueprint("action", __name__, url_prefix="/actions")
 
@@ -23,34 +27,64 @@ def list_actions():
 @action_bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new_action():
+    """
+    Create a new Action belonging to the current authenticated user from submitted form data.
+
+    On valid submission, parses the form's `properties` field as JSON (empty string -> {}), creates and persists the Action, flashes a success message, and redirects to the actions list. If the properties JSON is invalid, flashes an error and redirects back to the new-action page. On GET or when validation fails, renders the "new_action.j2" template with the form for user correction.
+
+    Returns:
+        A Flask response: a redirect (to the actions list on success or back to the new-action page on JSON error) or the rendered "new_action.j2" template when displaying the form or on validation failure.
+    """
     user = current_user()
     assert user is not None
 
-    if request.method == "POST":
-        name = request.form["name"].strip()
-        notes = request.form.get("notes", "")
-        properties_raw = request.form.get("properties", "{}")
+    form = NewActionForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        notes = form.notes.data
+        properties_raw = form.properties.data or "{}"
+        properties = {}
 
         try:
-            properties = json.loads(properties_raw) if properties_raw else {}
+            properties = json.loads(properties_raw.strip())
+            if not isinstance(properties, dict):
+                flash("Properties must be a JSON object.", "error")
+                return render_template("new_action.j2", form=form)
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
             return redirect(url_for("action.new_action"))
 
         action = Action(name=name, user_id=user.id, notes=notes, properties=properties)
         db_session.add(action)
-        db_session.commit()
+
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors = "Duplicate action name."
+            return render_template("new_action.j2", form=form)
 
         flash(f"Action '{name}' created successfully!", "info")
         return redirect(url_for("action.list_actions"))
 
-    return render_template("new_action.j2")
+    return render_template("new_action.j2", form=form)
 
 
 # Edit action
 @action_bp.route("/edit/action/<int:action_id>", methods=["GET", "POST"])
 @login_required
 def edit_action(action_id):
+    """
+    Render and handle the edit form for an Action owned by the current user.
+
+    Validates submitted form data, updates the Action's `name`, `notes`, and `properties` (parsed from JSON), commits changes to the database on success, and flashes status messages. If the Action is not found the user is redirected to the actions list. If `properties` contains invalid JSON the form is re-rendered with an error and no database commit is performed. On GET the `properties` field is pre-populated with pretty-printed JSON when appropriate.
+
+    Parameters:
+        action_id (int|str): Identifier of the Action to edit.
+
+    Returns:
+        A Flask response that either renders the edit form (with the form and action) or redirects to the actions list.
+    """
     user = current_user()
     assert user is not None
 
@@ -59,29 +93,63 @@ def edit_action(action_id):
         flash("Action not found.", "error")
         return redirect(url_for("action.list_actions"))
 
-    if request.method == "POST":
-        action.name = request.form["name"]
-        action.notes = request.form.get("notes", "")
-        properties_raw = request.form.get("properties", "{}")
+    form = EditActionForm(obj=action)  # Pre-fill form with existing data
 
+    if form.validate_on_submit():
+        assert form.name.data is not None
+        action.name = form.name.data
+        action.notes = form.notes.data or ""
+
+        properties_raw = form.properties.data or "{}"
         try:
-            properties = json.loads(properties_raw) if properties_raw else {}
-            action.properties = properties
+            parsed = json.loads(properties_raw.strip())
+            if not isinstance(parsed, dict):
+                flash("Properties must be a JSON object.", "error")
+                return render_template("edit_action.j2", form=form, action=action)
+            action.properties = parsed
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(url_for("action.list_actions"))
+            return render_template("edit_action.j2", form=form, action=action)
 
-        db_session.commit()
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
+            form.name.errors = "Duplicate action name."
+            return render_template("new_action.j2", form=form)
+
         flash("Action updated successfully!", "info")
         return redirect(url_for("action.list_actions"))
 
-    return render_template("edit_action.j2", action=action)
+    # Pre-populate the properties text area with JSON
+    if request.method == "GET":
+        form.properties.data = (
+            json.dumps(action.properties, indent=2)
+            if isinstance(action.properties, dict)
+            else action.properties
+        )
+
+    return render_template("edit_action.j2", form=form, action=action)
 
 
 # Edit activity
 @action_bp.route("/edit/log/<int:log_id>", methods=["GET", "POST"])
 @login_required
 def edit_activity(log_id):
+    """
+    Render and process the edit activity form for an ActivityLog owned by the current user.
+
+    Parameters:
+        log_id (int): ID of the ActivityLog to edit.
+
+    Behavior:
+        - If no ActivityLog with the given ID exists for the current user, flashes an error and redirects to the actions list.
+        - On valid form submission, updates the log's delta, notes (defaults to empty string), and properties (parsed from JSON); on JSON parse error flashes an error and re-renders the edit template.
+        - Commits changes to the database on successful update and flashes a success message.
+
+    Returns:
+        A Flask response: redirects to the actions list when the log is not found, redirects to the related action's history after a successful update, or renders the edit_activity.j2 template for GET requests, validation failures, or JSON parse errors.
+    """
     user = current_user()
     assert user is not None
 
@@ -95,31 +163,48 @@ def edit_activity(log_id):
         flash("Activity not found.", "error")
         return redirect(url_for("action.list_actions"))
 
-    if request.method == "POST":
-        log.delta = request.form["delta"]
-        log.notes = request.form.get("notes", "")
-        properties_raw = request.form.get("properties", "{}")
+    form = EditActivityForm(obj=log)
 
+    if form.validate_on_submit():
+        assert form.delta.data is not None
+        log.delta = form.delta.data
+        log.notes = form.notes.data or ""
+
+        properties_raw = form.properties.data or "{}"
         try:
-            properties = json.loads(properties_raw) if properties_raw else {}
-            log.properties = properties
+            log.properties = json.loads(properties_raw)
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(
-                url_for("action.view_action_history", action_id=log.action_id)
-            )
+            return render_template("edit_activity.j2", form=form, log=log)
 
         db_session.commit()
         flash("Activity updated successfully!", "info")
         return redirect(url_for("action.view_action_history", action_id=log.action_id))
 
-    return render_template("edit_activity.j2", log=log)
+    # Pre-populate JSON text on GET
+    if request.method == "GET":
+        form.properties.data = (
+            json.dumps(log.properties, indent=2)
+            if isinstance(log.properties, dict)
+            else log.properties
+        )
+
+    return render_template("edit_activity.j2", form=form, log=log)
 
 
 # Increment action (add log)
 @action_bp.route("/<int:action_id>/log", methods=["GET", "POST"])
 @login_required
 def log_activity(action_id):
+    """
+    Render the log-activity form for an action and create a new ActivityLog when the submitted form is valid.
+
+    Parameters:
+        action_id (int): ID of the action to log the activity for.
+
+    Returns:
+        A Flask response: on GET or when the form is invalid, renders the log activity template with the form and action; on successful submission, redirects to the action's history view; if the action does not exist, redirects to the actions list; if the properties field contains invalid JSON, redirects back to the log page.
+    """
     user = current_user()
     assert user is not None
 
@@ -128,11 +213,14 @@ def log_activity(action_id):
         flash("Action not found", "error")
         return redirect(url_for("action.list_actions"))
 
-    if request.method == "POST":
-        note = request.form.get("note", "")
-        properties_raw = request.form.get("properties", "{}")
-        delta = int(request.form.get("delta", 1))
+    form = LogActivityForm()
 
+    if form.validate_on_submit():
+        assert form.delta.data is not None
+        delta = form.delta.data
+        notes = form.notes.data
+
+        properties_raw = form.properties.data
         try:
             properties = json.loads(properties_raw) if properties_raw else {}
         except json.JSONDecodeError:
@@ -143,7 +231,7 @@ def log_activity(action_id):
             action_id=action.id,
             timestamp=datetime.now(timezone.utc),
             delta=delta,
-            note=note,
+            notes=notes,
             properties=properties,
         )
         db_session.add(log)
@@ -152,7 +240,7 @@ def log_activity(action_id):
         flash(f"Logged new instance for '{action.name}'", "success")
         return redirect(url_for("action.view_action_history", action_id=action.id))
 
-    return render_template("log_activity.j2", action=action)
+    return render_template("log_activity.j2", form=form, action=action)
 
 
 # View action history

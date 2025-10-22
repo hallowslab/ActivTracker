@@ -1,0 +1,37 @@
+/* Base Button */
+.btn {
+padding: 0.5rem 1rem;
+font-size: 1rem;
+border: none;
+border-radius: 0.5rem;
+cursor: pointer;
+text-decoration: none;
+font-weight: bold;
+transition: transform 0.1s, background-color 0.2s ease;
+}
+.btn:active {
+transform: scale(0.95);
+}
+/* Variants */
+.btn-primary {
+background-color: var(--primary);
+color: #fff;
+}
+.btn-primary:hover {
+background-color: color-mix(in srgb, var(--primary) 90%, black);
+}
+.btn-secondary {
+background-color: var(--secondary);
+color: var(--text);
+}
+.btn-secondary:hover {
+background-color: var(--primary);
+color: #fff;
+}
+.btn-danger {
+background-color: var(--danger);
+color: #fff;
+}
+.btn-danger:hover {
+background-color: color-mix(in srgb, var(--danger) 90%, black);
+}

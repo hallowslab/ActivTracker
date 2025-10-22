@@ -23,6 +23,16 @@ PLACEHOLDER_RE = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
 
 
 def render_text(text, env):
+    """
+    Substitutes `${VAR}` placeholders in `text` using values from `env` with a fallback to the process environment.
+    
+    Parameters:
+        text (str): Input string containing `${VAR}` placeholders.
+        env (Mapping[str, str]): Primary mapping of variable names to replacement values; lookups use this mapping first.
+    
+    Returns:
+        str: The input string with each `${VAR}` replaced by `env[VAR]` if present, otherwise by the corresponding `os.environ` value, or an empty string if neither provides a value.
+    """
     def repl(m):
         key = m.group(1)
         return env.get(key, os.environ.get(key, ""))
@@ -31,6 +41,16 @@ def render_text(text, env):
 
 
 def main():
+    """
+    Command-line entry point that renders template files using environment variables and writes the results to an output directory.
+    
+    Parses CLI arguments:
+    - --templates: path to a templates directory (collects files ending with `.template`) or a single template file.
+    - --out: destination directory to write rendered files (created if missing).
+    - --env: optional .env file to load and merge with the process environment.
+    
+    Loads variables from the optional .env file (if provided and found), merges them with the current environment, substitutes placeholders of the form `${VAR}` in each template using the merged environment (missing variables become empty strings), and writes each rendered file to the output directory preserving the template's base name but dropping the `.template` suffix. Prints warnings when the .env file is missing, notices when no templates are found in a directory, and an error message when the templates path is neither a file nor a directory.
+    """
     p = argparse.ArgumentParser()
     p.add_argument(
         "--templates", required=True, help="Templates directory or single template file"

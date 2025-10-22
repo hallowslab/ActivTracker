@@ -96,6 +96,15 @@ class NewActionForm(FlaskForm):
     submit = SubmitField("Save Changes")
 
     def validate_name(self, field):
+        """
+        Validate that the current user is authenticated and that the provided action name is not already used by that user.
+        
+        Parameters:
+            field: The form field containing the proposed action name (string).
+        
+        Raises:
+            ValidationError: If no user is authenticated or if an action with the same name already exists for the current user.
+        """
         user = current_user()
         if not user:
             raise ValidationError("Authentication required.")

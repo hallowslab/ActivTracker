@@ -72,6 +72,20 @@ def delete_log(log_id):
 @api_bp.route("/actions/<int:action_id>/logs", methods=["POST"])
 @token_required
 def api_add_log(action_id):
+    """
+    Create a new ActivityLog for the specified action belonging to the authenticated user.
+    
+    Expects a JSON payload with optional fields:
+    - "notes" (string): note text to attach to the log (defaults to "").
+    - "delta" (int|str): numeric delta for the log (defaults to 1; converted to int).
+    - "properties" (dict): additional properties (defaults to {}).
+    
+    Parameters:
+        action_id (int): ID of the action to attach the log to; the action must belong to the authenticated user.
+    
+    Returns:
+        A Flask response: on success returns JSON {"status": "ok", "message": "Logged '<action.name>'"} with HTTP 201; if the action does not exist returns JSON {"error": "Action not found"} with HTTP 404.
+    """
     user = user_from_token()
     assert user is not None
 

@@ -12,6 +12,14 @@ from pathlib import Path
 
 def main(path: Path) -> None:
     # Ensure parent directories exist
+    """
+    Generate a cryptographically strong 64-byte secret key, base64-encode it, and write it to the given file path.
+    
+    The function ensures the file's parent directories exist, writes the encoded key to the file, and prints the resolved path to confirm where the key was written.
+    
+    Parameters:
+        path (Path): Filesystem path where the base64-encoded secret key will be saved.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
 
     # Generate 64 random bytes and base64-encode

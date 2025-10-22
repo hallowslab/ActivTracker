@@ -33,15 +33,36 @@ app.cli.add_command(collect_static)
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
+    """
+    Remove the current database session when the application context is torn down.
+    
+    Parameters:
+        exception (Exception | None): Optional exception passed by Flask's teardown machinery; this function ignores it.
+    """
     db_session.remove()
 
 
 @app.route("/")
 def index():
+    """
+    Redirects the client to the dashboard index route.
+    
+    Returns:
+        A redirect response that directs the client to the 'dashboard.index' endpoint.
+    """
     return redirect(url_for("dashboard.index"))
 
 
 def load_secret(path: Path = Path(".secret")):
+    """
+    Load and return the contents of a secret file.
+    
+    Parameters:
+        path (Path): Path to the secret file (defaults to ".secret").
+    
+    Returns:
+        str or None: The file contents as a string if the path exists and is a file, otherwise None.
+    """
     try:
         if path.exists() and path.is_file():
             with path.open() as f:
@@ -51,6 +72,15 @@ def load_secret(path: Path = Path(".secret")):
 
 
 def init():
+    """
+    Initialize and configure the Flask application, including loading environment variables, setting the secret key, and enabling CSRF protection.
+    
+    Returns:
+        The configured Flask application instance.
+    
+    Raises:
+        RuntimeError: If FLASK_ENV is "production" and the secret key file cannot be loaded.
+    """
     load_dotenv()
     print(f"FLASK_ENV: {FLASK_ENV}, DEBUG: {_DEBUG}")
     app.secret_key = "!DEBUG!"

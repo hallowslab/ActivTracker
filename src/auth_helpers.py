@@ -8,7 +8,14 @@ from models import User
 
 
 def current_user():
-    """Returns the currently logged-in user object, or None."""
+    """
+    Get the User object for the currently logged-in session, or None if no valid user is present.
+    
+    If the session contains a user_id that does not correspond to a User in the database, the session is cleared before returning None.
+    
+    Returns:
+        user (User|None): The User matching the session's user_id, or None if not logged in or the session was invalid.
+    """
     user_id = session.get("user_id")
     if user_id:
         return db_session.query(User).filter_by(id=user_id).first()

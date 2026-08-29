@@ -43,10 +43,17 @@ You can then view trends and summaries through a visual dashboard.
 
 ### Dependencies
 
-- Python 3.13
-- uv(optional, recommended)
+- Python 3.13+
+- uv
+- make
+- nginx
+- openssl
 - systemd
-- nginx (optional, recommended)
+
+The nginx and systemd configs are generated from templates
+(`deploy/templates/`) by a Makefile, which also generates the self-signed
+SSL certificate, collects static assets, initializes the database, and
+installs the service.
 
 ### Clone the repository
 
@@ -55,54 +62,73 @@ git clone https://github.com/hallowslab/ActivTracker.git
 cd ActivTracker/src
 ```
 
-### Create virtual environment & Install dependencies (UV example)
+### Create virtual environment & Install dependencies
 
-`uv sync`
-
-### Initialize the database
-
-`uv run python create_db.py`
+```sh
+uv sync
+```
 
 ### Configure .env
 
-- Create a .env file inside the src directory by copying .env.template,
-  then modify the following variables:
-  - FLASK_ENV="development" - set to "production"
-  - STATIC_ROOT=/var/www/activ/static - set to the root of where you will
-    serve static assets with nginx
+Create a `.env` file inside the `src` directory by copying the template,
+then adjust the values:
 
-This will create a local SQLite database and initialize all tables.
+```sh
+cp .env.template .env
+```
 
-### Generate a .secret
+- `FLASK_ENV` - set to `"production"` (never `development` in production)
+- `USER` - the system user that will run the app; it must exist and own the
+  project directory so it can write the SQLite database and `.secret`
+- `STATIC_ROOT` - directory where static assets are served from by nginx
+  (e.g. `/var/www/activ/static`)
+- `DOMAIN` - the hostname nginx serves this app on (set this to your IP or
+  add a hosts entry if you access the box by IP)
+- `ENABLE_SSL` - `true` to generate a self-signed certificate and serve
+  HTTPS (redirecting HTTP to HTTPS), `false` for plain HTTP
+- `SSL_DIR` - directory the SSL certificate/key are installed to
+  (only used when `ENABLE_SSL=true`)
 
-`uv run python generate_secret.py`
+The service template expects the app at `/home/<USER>/ActivTracker/src`.
+If you clone it elsewhere (e.g. `/opt/ActivTracker`), edit
+`deploy/templates/activitytracker.service.template` so `WorkingDirectory`
+and `ExecStart` point at the real path.
 
-### Setup nginx
+### Deploy
 
-- Modify activitytracker.nginx to replace STATIC_ROOT with your actual path
-- Copy the modified file to to `/etc/nginx/sites-available/activitytracker`
-- Enable it with:
-  `sudo ln -s /etc/nginx/sites-available/activitytracker /etc/nginx/sites-enabled/`
-- Enable nginx with:
-  `sudo nginx -t; sudo systemctl reload nginx`
-- Create the STATIC_ROOT directory and add permissions:
-  - `sudo mkdir -p STATIC_ROOT; sudo chmod -R 755 STATIC_ROOT; sudo chown -R USER:www-data STATIC_ROOT`
-  - Remember to make sure to replace STATIC_ROOT and USER with their respective values, and www-data is the nginx group on debian derivatives
-- Copy the static files to the STATIC_ROOT directory:
-  - From the project's src directory run:
-    `uv run flask collect-static`
+```sh
+make all
+```
 
-### Setup systemd unit
+`make all` runs, in order:
 
-- Modify activitytracker.service
-  - replace USER with the user that will run the app
-  - Change /home/USER/ActivTracker/src if you have the app outside the user's home directory (will need write perms)
-  - Change STATIC_ROOT=/var/www/activ/static, if you changed in .env
-- Copy the the modified file to /etc/systemd/system/activitytracker.service
-- Enable the service:
-  `sudo systemctl daemon-reload; sudo systemctl enable --now activitytracker`
-- Check status with:
-  `sudo systemctl status activitytracker`
+1. `check` - verifies `openssl` and `nginx` are installed
+2. `render` - fills in the nginx and systemd templates from `.env` and
+   writes them to `deploy/rendered/`
+3. `ssl` - generates a self-signed certificate (only when `ENABLE_SSL=true`)
+   and installs it into `SSL_DIR`
+4. `static` - creates `STATIC_ROOT` with correct ownership and copies the
+   static files into it
+5. `db` - creates the SQLite database and tables (`tracker.sqlite3`)
+6. `secret` - generates `.secret` (required in production; the app refuses
+   to start without it)
+7. `nginx` - installs the rendered nginx config and reloads nginx
+8. `systemd` - installs and starts the `activitytracker` service
+   (gunicorn on port 8000)
+
+Each step can also be run individually (e.g. `make static` after changing
+`.env`), and `make clean` removes the service, nginx config, and generated
+SSL certificates.
+
+### Verify
+
+```sh
+sudo systemctl status activitytracker
+sudo nginx -t
+curl -k https://localhost/api/actions
+```
+
+A certificate warning on first visit is expected - it is self-signed.
 
 ---
 

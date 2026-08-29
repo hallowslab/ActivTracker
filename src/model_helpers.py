@@ -1,6 +1,7 @@
-from datetime import datetime, timezone, timedelta
-from sqlalchemy import func
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
+
+from sqlalchemy import func
 
 from database import db_session
 from models import Action, ActivityLog

@@ -1,32 +1,40 @@
 {% extends "base.html" %}
-{% block body_class %}auth-page{% endblock %}
-{% block title %}Register{% endblock %}
+{% block body_class %}
+    auth-page
+{% endblock body_class %}
+{% block title %}
+    Register
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/auth.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
     <div class="auth-container">
         <h1>Register</h1>
         <form method="post">
+            {{ form.csrf_token }}
             <div>
-                <label for="username">Username</label>
-                <input type="text"
-                       id="username"
-                       name="username"
-                       autocomplete="username"
-                       required>
+                {{ form.username.label }}
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
             </div>
             <div>
-                <label for="password">Password</label>
-                <input type="password"
-                       id="password"
-                       name="password"
-                       autocomplete="current-password"
-                       required>
+                {{ form.password.label }}
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
             </div>
+            <br>
             <button type="submit">Register</button>
         </form>
-        <a href="{{ url_for("auth.login") }}" class="auth-link">Already have an account? Login</a>
+        <a href="{{ url_for('auth.login') }}" class="auth-link">Already have an account? Login</a>
     </div>
-{% endblock %}
+{% endblock content %}

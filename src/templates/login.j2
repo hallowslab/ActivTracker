@@ -1,32 +1,30 @@
 {% extends "base.html" %}
-{% block body_class %}auth-page{% endblock %}
-{% block title %}Login{% endblock %}
+{% block body_class %}
+    auth-page
+{% endblock body_class %}
+{% block title %}
+    Login
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/auth.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
     <div class="auth-container">
         <h1>Login</h1>
         <form method="post">
+            {{ form.csrf_token }}
             <div>
-                <label for="username">Username</label>
-                <input type="text"
-                       id="username"
-                       name="username"
-                       autocomplete="username"
-                       required>
+                {{ form.username.label }}
+                {{ form.username }}
             </div>
             <div>
-                <label for="password">Password</label>
-                <input type="password"
-                       id="password"
-                       name="password"
-                       autocomplete="current-password"
-                       required>
+                {{ form.password.label }}
+                {{ form.password }}
             </div>
+            <br>
             <button type="submit">Login</button>
         </form>
-        <a href="{{ url_for("auth.register") }}" class="auth-link">Don't have an account? Register</a>
+        <a href="{{ url_for('auth.register') }}" class="auth-link">Don't have an account? Register</a>
     </div>
-{% endblock %}
+{% endblock content %}

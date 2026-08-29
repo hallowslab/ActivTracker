@@ -1,10 +1,24 @@
+# HTTPS nginx config for ActivTracker (self-signed)
 server {
     listen 80;
-    server_name _;
+    server_name ${DOMAIN};
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name ${DOMAIN};
+
+    ssl_certificate     ${SSL_DIR}/${DOMAIN}.crt;
+    ssl_certificate_key ${SSL_DIR}/${DOMAIN}.key;
+
+    # Security hints for local/self-signed usage
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
 
     # Static files directly from disk
     location /static/ {
-        alias STATIC_ROOT/;
+        alias ${STATIC_ROOT}/;
         expires 30d;
         add_header Cache-Control "public";
         access_log off;

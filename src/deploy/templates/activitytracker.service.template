@@ -1,0 +1,16 @@
+[Unit]
+Description=Activity Tracker Flask App
+After=network.target
+
+[Service]
+Type=simple
+User=${USER}
+WorkingDirectory=/home/${USER}/ActivTracker/src
+ExecStart=/home/${USER}/ActivTracker/src/.venv/bin/gunicorn -k gevent -w 1 -b 0.0.0.0:8000 'app:init()'
+Restart=always
+RestartSec=5
+Environment=FLASK_ENV=${FLASK_ENV}
+Environment=STATIC_ROOT=${STATIC_ROOT}
+
+[Install]
+WantedBy=multi-user.target

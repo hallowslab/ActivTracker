@@ -1,6 +1,6 @@
 # database.py
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 
 # SQLite database in current directory
 engine = create_engine("sqlite:///tracker.sqlite3", echo=False)

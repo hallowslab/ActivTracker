@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% block title %}API Token{% endblock %}
+{% block title %}
+    API Token
+{% endblock title %}
 {% block head %}
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/token.css') }}">
-{% endblock %}
+{% endblock head %}
 {% block content %}
-    <div class="token-container">
+    <div class="card token">
         <h1>Your API Token</h1>
         {% if token %}
             <p>
@@ -19,9 +21,9 @@
             <p>No token generated yet.</p>
         {% endif %}
         <div class="token-buttons">
-            <a href="{{ url_for("dashboard.generate_token") }}"
+            <a href="{{ url_for('dashboard.generate_token') }}"
                class="btn btn-primary">Generate New Token</a>
-            <a href="{{ url_for("action.list_actions") }}" class="btn btn-secondary">Back to Actions</a>
+            <a href="{{ url_for('action.list_actions') }}" class="btn btn-secondary">Back to Actions</a>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}

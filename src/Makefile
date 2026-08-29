@@ -6,7 +6,7 @@ all: check render ssl static db secret nginx systemd
 
 check:
 	@command -v openssl >/dev/null 2>&1 || { echo "ERROR: openssl not installed. Please install openssl first."; exit 1; }
-	@command -v nginx >/dev/null 2>&1 || { echo "ERROR: nginx not installed. Please install nginx first."; exit 1; }
+	@(command -v nginx >/dev/null 2>&1 || test -x /usr/sbin/nginx) || { echo "ERROR: nginx not installed. Please install nginx first."; exit 1; }
 
 render:
 ifeq ($(ENABLE_SSL),true)

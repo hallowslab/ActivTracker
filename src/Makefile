@@ -10,12 +10,13 @@ check:
 
 render:
 ifeq ($(ENABLE_SSL),true)
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.ssl.template --out deploy/rendered --env src/.env
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.ssl.template --out deploy/rendered --env .env
 	mv deploy/rendered/activitytracker.nginx.ssl deploy/rendered/activitytracker.nginx
 else
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.http.template --out deploy/rendered --env src/.env
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.nginx.http.template --out deploy/rendered --env .env
+	mv deploy/rendered/activitytracker.nginx.http deploy/rendered/activitytracker.nginx
 endif
-	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env src/.env
+	uv run python scripts/render_templates.py --templates deploy/templates/activitytracker.service.template --out deploy/rendered --env .env
 
 ssl:
 ifeq ($(ENABLE_SSL),true)

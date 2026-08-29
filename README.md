@@ -51,7 +51,7 @@ You can then view trends and summaries through a visual dashboard.
 ### Clone the repository
 
 ```sh
-git clone https://github.com/yourusername/ActivTracker.git
+git clone https://github.com/hallowslab/ActivTracker.git
 cd ActivTracker/src
 ```
 

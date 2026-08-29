@@ -52,7 +52,7 @@ def new_action():
                 return render_template("new_action.j2", form=form)
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(url_for("action.new_action"))
+            return render_template("new_action.j2", form=form)
 
         action = Action(name=name, user_id=user.id, notes=notes, properties=properties)
         db_session.add(action)
@@ -61,7 +61,7 @@ def new_action():
             db_session.commit()
         except IntegrityError:
             db_session.rollback()
-            form.name.errors = "Duplicate action name."
+            form.name.errors = ["Duplicate action name."]
             return render_template("new_action.j2", form=form)
 
         flash(f"Action '{name}' created successfully!", "info")
@@ -115,8 +115,8 @@ def edit_action(action_id):
             db_session.commit()
         except IntegrityError:
             db_session.rollback()
-            form.name.errors = "Duplicate action name."
-            return render_template("new_action.j2", form=form)
+            form.name.errors = ["Duplicate action name."]
+            return render_template("edit_action.j2", form=form, action=action)
 
         flash("Action updated successfully!", "info")
         return redirect(url_for("action.list_actions"))
@@ -172,7 +172,11 @@ def edit_activity(log_id):
 
         properties_raw = form.properties.data or "{}"
         try:
-            log.properties = json.loads(properties_raw)
+            parsed = json.loads(properties_raw)
+            if not isinstance(parsed, dict):
+                flash("Properties must be a JSON object.", "error")
+                return render_template("edit_activity.j2", form=form, log=log)
+            log.properties = parsed
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
             return render_template("edit_activity.j2", form=form, log=log)
@@ -225,7 +229,7 @@ def log_activity(action_id):
             properties = json.loads(properties_raw) if properties_raw else {}
         except json.JSONDecodeError:
             flash("Invalid JSON in properties", "error")
-            return redirect(url_for("action.log_activity", action_id=action.id))
+            return render_template("log_activity.j2", form=form, action=action)
 
         log = ActivityLog(
             action_id=action.id,

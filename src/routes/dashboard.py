@@ -88,13 +88,13 @@ def index():
         summary_counts[action.name] = sum(values)
 
     # compute trend change
-    if activity_data:
+    if activity_data and days >= 14:
         first_total = sum(sum(a["values"][:7]) for a in activity_data)
         last_total = sum(sum(a["values"][-7:]) for a in activity_data)
         trend_change = (
             round(((last_total - first_total) / first_total * 100), 1)
             if first_total
-            else 0
+            else (100.0 if last_total > 0 else 0)
         )
     else:
         trend_change = 0

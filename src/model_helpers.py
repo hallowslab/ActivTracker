@@ -11,6 +11,9 @@ def summarize_actions(user_id: int, period: str = "week"):
     """
     Returns summary of actions for a given period.
     period: "day", "week", "month"
+
+    Count actions: total delta in the window.
+    Measurement actions: latest reading in the window (sums are meaningless).
     """
     now = datetime.now(timezone.utc)
 
@@ -23,32 +26,55 @@ def summarize_actions(user_id: int, period: str = "week"):
     else:
         raise ValueError("Invalid period")
 
-    # Aggregate total delta per action
-    results = (
-        db_session.query(
-            Action.name, func.coalesce(func.sum(ActivityLog.delta), 0).label("total")
-        )
-        .outerjoin(ActivityLog, ActivityLog.action_id == Action.id)
-        .filter(Action.user_id == user_id)
-        .filter((ActivityLog.timestamp >= start) | (ActivityLog.timestamp == None))
-        .group_by(Action.id)
-        .all()
-    )
+    actions = db_session.query(Action).filter(Action.user_id == user_id).all()
 
-    summary = {name: total or 0 for name, total in results}
+    summary = {}
+    for action in actions:
+        if action.kind == "measure":
+            latest = (
+                db_session.query(ActivityLog.value)
+                .filter(
+                    ActivityLog.action_id == action.id,
+                    ActivityLog.value.isnot(None),
+                    ActivityLog.timestamp >= start,
+                )
+                .order_by(ActivityLog.timestamp.desc())
+                .first()
+            )
+            summary[action.name] = latest[0] if latest else 0
+        else:
+            total = (
+                db_session.query(func.coalesce(func.sum(ActivityLog.delta), 0))
+                .filter(
+                    ActivityLog.action_id == action.id,
+                    ActivityLog.timestamp >= start,
+                )
+                .scalar()
+            )
+            summary[action.name] = total or 0
     return summary
 
 
 def get_activity_timeseries(user_id: int, action_id: int, days: int = 30):
     """
     Returns a time series for a single action over the last `days` days.
-    Output: list of dicts [{'date': 'YYYY-MM-DD', 'delta': int}, ...]
+    Output: list of dicts [{'date': 'YYYY-MM-DD', 'value': float|int|None}, ...]
+
+    Count actions: per-day sum of deltas, missing days filled with 0.
+    Measurement actions: per-day mean of readings, missing days left as None (gap).
     """
+    action = (
+        db_session.query(Action)
+        .filter(Action.id == action_id, Action.user_id == user_id)
+        .first()
+    )
+    is_measure = bool(action and action.kind == "measure")
+
     now = datetime.now(timezone.utc)
     start = now - timedelta(days=days)
 
     logs = (
-        db_session.query(ActivityLog.timestamp, ActivityLog.delta)
+        db_session.query(ActivityLog.timestamp, ActivityLog.delta, ActivityLog.value)
         .join(Action, Action.id == ActivityLog.action_id)
         .filter(Action.user_id == user_id)
         .filter(ActivityLog.action_id == action_id)
@@ -57,16 +83,30 @@ def get_activity_timeseries(user_id: int, action_id: int, days: int = 30):
         .all()
     )
 
-    # Aggregate deltas per day
-    daily_totals = defaultdict(int)
-    for ts, delta in logs:
+    # Aggregate per day
+    daily_totals: defaultdict[str, float] = defaultdict(float)
+    daily_counts: defaultdict[str, int] = defaultdict(int)
+    for ts, delta, value in logs:
         day = ts.date().isoformat()
-        daily_totals[day] += delta
+        if is_measure:
+            if value is not None:
+                daily_totals[day] += value
+                daily_counts[day] += 1
+        else:
+            daily_totals[day] += delta
 
-    # Fill missing days with 0
     timeseries = []
     for i in range(days + 1):
         day = (start + timedelta(days=i)).date().isoformat()
-        timeseries.append({"date": day, "delta": daily_totals.get(day, 0)})
+        if is_measure:
+            if daily_counts[day]:
+                val: float | int | None = round(
+                    daily_totals[day] / daily_counts[day], 2
+                )
+            else:
+                val = None
+        else:
+            val = daily_totals.get(day, 0)
+        timeseries.append({"date": day, "value": val})
 
     return timeseries

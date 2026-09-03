@@ -6,10 +6,43 @@ from sqlalchemy.exc import IntegrityError
 
 from auth_helpers import current_user, login_required
 from database import db_session
-from forms import EditActionForm, EditActivityForm, LogActivityForm, NewActionForm
+from forms import (
+    EditActionForm,
+    EditActivityForm,
+    EditMeasurementForm,
+    LogActivityForm,
+    LogMeasurementForm,
+    NewActionForm,
+)
 from models import Action, ActivityLog
 
 action_bp = Blueprint("action", __name__, url_prefix="/actions")
+
+
+def _measurement_label(action: Action) -> str:
+    return f"{action.name} ({action.unit})" if action.unit else action.name
+
+
+def _convert_logs_kind(action: Action, new_kind: str) -> int:
+    """
+    Transform existing logs when an action switches kind.
+
+    count -> measure: each log's delta becomes the reading value (delta reset to 0).
+    measure -> count: each log's value becomes the delta, rounded to int (value reset to None).
+    Returns the number of logs converted.
+    """
+    logs = db_session.query(ActivityLog).filter_by(action_id=action.id).all()
+    converted = 0
+    for log in logs:
+        if new_kind == "measure" and log.value is None:
+            log.value = float(log.delta)
+            log.delta = 0
+            converted += 1
+        elif new_kind == "count" and log.value is not None:
+            log.delta = int(round(log.value))
+            log.value = None
+            converted += 1
+    return converted
 
 
 # List all actions
@@ -42,6 +75,8 @@ def new_action():
     if form.validate_on_submit():
         name = form.name.data
         notes = form.notes.data
+        kind = form.kind.data or "count"
+        unit = (form.unit.data or "").strip()
         properties_raw = form.properties.data or "{}"
         properties = {}
 
@@ -54,7 +89,14 @@ def new_action():
             flash("Invalid JSON in properties", "error")
             return render_template("new_action.j2", form=form)
 
-        action = Action(name=name, user_id=user.id, notes=notes, properties=properties)
+        action = Action(
+            name=name,
+            user_id=user.id,
+            notes=notes,
+            kind=kind,
+            unit=unit,
+            properties=properties,
+        )
         db_session.add(action)
 
         try:
@@ -97,7 +139,11 @@ def edit_action(action_id):
 
     if form.validate_on_submit():
         assert form.name.data is not None
+        old_kind = action.kind
+        new_kind = form.kind.data or "count"
         action.name = form.name.data
+        action.kind = new_kind
+        action.unit = (form.unit.data or "").strip()
         action.notes = form.notes.data or ""
 
         properties_raw = form.properties.data or "{}"
@@ -117,6 +163,15 @@ def edit_action(action_id):
             db_session.rollback()
             form.name.errors = ["Duplicate action name."]
             return render_template("edit_action.j2", form=form, action=action)
+
+        if new_kind != old_kind:
+            converted = _convert_logs_kind(action, new_kind)
+            db_session.commit()
+            if converted:
+                flash(
+                    f"Converted {converted} existing log(s) to the new tracking type.",
+                    "info",
+                )
 
         flash("Action updated successfully!", "info")
         return redirect(url_for("action.list_actions"))
@@ -162,6 +217,45 @@ def edit_activity(log_id):
     if not log:
         flash("Activity not found.", "error")
         return redirect(url_for("action.list_actions"))
+
+    if log.action.kind == "measure":
+        form = EditMeasurementForm(obj=log)
+        form.value.label.text = _measurement_label(log.action)
+
+        if form.validate_on_submit():
+            assert form.value.data is not None
+            log.value = form.value.data
+            log.notes = form.notes.data or ""
+
+            properties_raw = form.properties.data or "{}"
+            try:
+                parsed = json.loads(properties_raw)
+                if not isinstance(parsed, dict):
+                    flash("Properties must be a JSON object.", "error")
+                    return render_template(
+                        "edit_activity.j2", form=form, log=log, is_measure=True
+                    )
+                log.properties = parsed
+            except json.JSONDecodeError:
+                flash("Invalid JSON in properties", "error")
+                return render_template(
+                    "edit_activity.j2", form=form, log=log, is_measure=True
+                )
+
+            db_session.commit()
+            flash("Activity updated successfully!", "info")
+            return redirect(
+                url_for("action.view_action_history", action_id=log.action_id)
+            )
+
+        if request.method == "GET":
+            form.properties.data = (
+                json.dumps(log.properties, indent=2)
+                if isinstance(log.properties, dict)
+                else log.properties
+            )
+
+        return render_template("edit_activity.j2", form=form, log=log, is_measure=True)
 
     form = EditActivityForm(obj=log)
 
@@ -216,6 +310,38 @@ def log_activity(action_id):
     if not action:
         flash("Action not found", "error")
         return redirect(url_for("action.list_actions"))
+
+    if action.kind == "measure":
+        form = LogMeasurementForm()
+        form.value.label.text = _measurement_label(action)
+
+        if form.validate_on_submit():
+            assert form.value.data is not None
+
+            properties_raw = form.properties.data
+            try:
+                properties = json.loads(properties_raw) if properties_raw else {}
+            except json.JSONDecodeError:
+                flash("Invalid JSON in properties", "error")
+                return render_template("log_activity.j2", form=form, action=action)
+
+            log = ActivityLog(
+                action_id=action.id,
+                timestamp=datetime.now(timezone.utc),
+                delta=0,
+                value=form.value.data,
+                notes=form.notes.data,
+                properties=properties,
+            )
+            db_session.add(log)
+            db_session.commit()
+
+            flash(
+                f"Logged {form.value.data} {action.unit} for '{action.name}'", "success"
+            )
+            return redirect(url_for("action.view_action_history", action_id=action.id))
+
+        return render_template("log_activity.j2", form=form, action=action)
 
     form = LogActivityForm()
 

@@ -79,3 +79,11 @@ margin: 1rem;
 padding: 1.5rem;
 }
 }
+
+/* --- Form hint --- */
+.form-hint {
+color: #666;
+font-size: 0.85rem;
+font-style: italic;
+margin: 0.25rem 0 0;
+}

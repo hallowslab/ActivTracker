@@ -20,9 +20,30 @@ list-style: none;
 }
 /* Title and notes */
 .action-title {
+display: flex;
+align-items: center;
+gap: 0.6rem;
 font-weight: 600;
 font-size: 1.1rem;
 margin: 0 0 0.25rem;
+}
+.badge {
+font-size: 0.7rem;
+font-weight: 600;
+padding: 0.15em 0.6em;
+border-radius: 999px;
+text-transform: uppercase;
+letter-spacing: 0.03em;
+}
+.badge-measure {
+background: #e7f5f3;
+color: #2f9c95;
+border: 1px solid #2f9c95;
+}
+.badge-count {
+background: #eef2ff;
+color: #4c5fd5;
+border: 1px solid #4c5fd5;
 }
 .action-notes {
 color: #666;

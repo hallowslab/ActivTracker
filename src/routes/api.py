@@ -28,7 +28,14 @@ def api_list_actions():
     actions = db_session.query(Action).filter_by(user_id=user.id).all()
     return jsonify(
         [
-            {"id": a.id, "name": a.name, "notes": a.notes, "properties": a.properties}
+            {
+                "id": a.id,
+                "name": a.name,
+                "kind": a.kind,
+                "unit": a.unit,
+                "notes": a.notes,
+                "properties": a.properties,
+            }
             for a in actions
         ]
     )
@@ -74,15 +81,15 @@ def delete_log(log_id):
 def api_add_log(action_id):
     """
     Create a new ActivityLog for the specified action belonging to the authenticated user.
-    
+
     Expects a JSON payload with optional fields:
     - "notes" (string): note text to attach to the log (defaults to "").
     - "delta" (int|str): numeric delta for the log (defaults to 1; converted to int).
     - "properties" (dict): additional properties (defaults to {}).
-    
+
     Parameters:
         action_id (int): ID of the action to attach the log to; the action must belong to the authenticated user.
-    
+
     Returns:
         A Flask response: on success returns JSON {"status": "ok", "message": "Logged '<action.name>'"} with HTTP 201; if the action does not exist returns JSON {"error": "Action not found"} with HTTP 404.
     """
@@ -95,16 +102,39 @@ def api_add_log(action_id):
 
     data = request.get_json()
     note = data.get("notes", "")
-    delta = int(data.get("delta", 1))
     properties = data.get("properties", {})
 
-    log = ActivityLog(
-        action_id=action.id,
-        timestamp=datetime.now(timezone.utc),
-        delta=delta,
-        note=note,
-        properties=properties,
-    )
+    if action.kind == "measure":
+        if data.get("value") is None:
+            return (
+                jsonify({"error": "Measurement actions require a numeric 'value'"}),
+                400,
+            )
+        try:
+            value = float(data["value"])
+        except (TypeError, ValueError):
+            return jsonify({"error": "'value' must be numeric"}), 400
+        log = ActivityLog(
+            action_id=action.id,
+            timestamp=datetime.now(timezone.utc),
+            delta=0,
+            value=value,
+            notes=note,
+            properties=properties,
+        )
+    else:
+        try:
+            delta = int(data.get("delta", 1))
+        except (TypeError, ValueError):
+            return jsonify({"error": "'delta' must be an integer"}), 400
+        log = ActivityLog(
+            action_id=action.id,
+            timestamp=datetime.now(timezone.utc),
+            delta=delta,
+            notes=note,
+            properties=properties,
+        )
+
     db_session.add(log)
     db_session.commit()
 

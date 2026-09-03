@@ -5,6 +5,7 @@ from sqlalchemy import (
     JSON,
     Column,
     DateTime,
+    Float,
     ForeignKey,
     Integer,
     String,
@@ -41,6 +42,11 @@ class Action(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
 
+    # "count" = increment-style activity (times per day), "measure" = absolute readings (e.g. weight)
+    kind: Mapped[str] = mapped_column(String(20), default="count", nullable=False)
+    # unit for measurement actions, e.g. "kg"; empty for count actions
+    unit: Mapped[str] = mapped_column(String(30), default="", nullable=False)
+
     # general notes and metadata
     notes: Mapped[str] = mapped_column(default="", nullable=False)
     properties: Mapped[dict] = mapped_column(JSON, default={})
@@ -61,6 +67,8 @@ class ActivityLog(Base):
     # Can later be used to track multiple occurences on a single log
     # ActivityLog=DrankWater, Delta=2, Drank 2 cups of water
     delta = mapped_column(Integer, default=1, nullable=False)
+    # absolute reading for "measure" actions (e.g. weight in kg); None for count actions
+    value: Mapped[float | None] = mapped_column(Float, nullable=True, default=None)
 
     # per-instance info
     notes: Mapped[str] = mapped_column(default="", nullable=False)

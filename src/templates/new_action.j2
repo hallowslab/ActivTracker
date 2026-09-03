@@ -17,6 +17,24 @@
                 {% endif %}
             </div>
             <div>
+                {{ form.kind.label }}
+                {{ form.kind }}
+                {% if form.kind.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.kind.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                {{ form.unit.label }}
+                {{ form.unit }}
+                {% if form.unit.errors %}
+                    <ul class="form-errors">
+                        {% for error in form.unit.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
                 {{ form.notes.label }}
                 {{ form.notes }}
                 {% if form.notes.errors %}

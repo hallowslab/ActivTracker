@@ -8,9 +8,15 @@
         <form method="post">
             {{ form.csrf_token }}
             <div>
-                {{ form.delta.label }}
-                {{ form.delta(class="input-number") }}
-                {% if form.delta.errors %}<div class="error">{{ form.delta.errors[0] }}</div>{% endif %}
+                {% if action.kind == 'measure' %}
+                    {{ form.value.label }}
+                    {{ form.value(class="input-number") }}
+                    {% if form.value.errors %}<div class="error">{{ form.value.errors[0] }}</div>{% endif %}
+                {% else %}
+                    {{ form.delta.label }}
+                    {{ form.delta(class="input-number") }}
+                    {% if form.delta.errors %}<div class="error">{{ form.delta.errors[0] }}</div>{% endif %}
+                {% endif %}
             </div>
             <div>
                 {{ form.notes.label }}

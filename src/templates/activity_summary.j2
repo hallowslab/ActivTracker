@@ -9,6 +9,15 @@
 {% block content %}
     <div class="card summary">
         <h1>{{ data.action.name }} - Last {{ data.days }} days</h1>
+        {% if data.is_measure %}
+            <p class="measure-summary">
+                {% if data.action.unit %}
+                    Daily mean in {{ data.action.unit }}; days without a reading are skipped.
+                {% else %}
+                    Daily mean; days without a reading are skipped.
+                {% endif %}
+            </p>
+        {% endif %}
         <form method="get" class="summary-controls">
             {{ form.csrf_token }}
             <div>
@@ -31,17 +40,20 @@
 
         const labels = {{ data.labels|tojson }};
         const values = {{ data._values|tojson }};
+        const isMeasure = {{ 'true' if data.is_measure else 'false' }};
+        const unit = {{ data.action.unit|tojson }};
 
         const chartData = {
             labels: labels,
             datasets: [
                 {
-                    label: 'Delta per day',
+                    label: isMeasure ? (unit ? `Avg ${unit}` : 'Reading') : 'Delta per day',
                     data: values,
                     fill: false,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    tension: 0.3
+                    tension: 0.3,
+                    spanGaps: true
                 },
                 {
                     label: 'Trend',
@@ -62,7 +74,7 @@
                 plugins: { legend: { display: true } },
                 scales: {
                     x: { title: { display: true, text: 'Date' } },
-                    y: { beginAtZero: true, title: { display: true, text: 'Delta count' } }
+                    y: { beginAtZero: !isMeasure, title: { display: true, text: isMeasure ? unit : 'Delta count' } }
                 }
             }
         });

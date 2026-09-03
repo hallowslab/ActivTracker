@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import (
+    FloatField,
     HiddenField,
     IntegerField,
     PasswordField,
@@ -23,9 +24,24 @@ class ActivitySummaryForm(FlaskForm):
 
 class EditActionForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
+    kind = SelectField(
+        "Tracking type",
+        choices=[
+            ("count", "Count (X times per day)"),
+            ("measure", "Measurement (a value, e.g. weight)"),
+        ],
+        coerce=str,
+        default="count",
+        validators=[DataRequired()],
+    )
+    unit = StringField("Unit", default="", render_kw={"placeholder": "e.g. kg"})
     notes = TextAreaField("Notes")
     properties = TextAreaField("Properties (JSON)")
     submit = SubmitField("Save Changes")
+
+    def validate_unit(self, field):
+        if self.kind.data == "measure" and not (field.data or "").strip():
+            raise ValidationError("Measurements require a unit, e.g. 'kg'.")
 
 
 class TimeframeForm(FlaskForm):
@@ -48,11 +64,33 @@ class EditActivityForm(FlaskForm):
     submit = SubmitField("Save Changes")
 
 
+class EditMeasurementForm(FlaskForm):
+    value = FloatField(
+        "Value",
+        validators=[DataRequired(), NumberRange(min=-100000, max=100000)],
+        render_kw={"type": "number", "step": "any"},
+    )
+    notes = TextAreaField("Notes")
+    properties = TextAreaField("Properties (JSON)")
+    submit = SubmitField("Save Changes")
+
+
 class LogActivityForm(FlaskForm):
     delta = IntegerField(
         "Delta (amount)",
         default=1,
         validators=[DataRequired(), NumberRange(min=-1000, max=1000)],
+    )
+    notes = TextAreaField("Notes")
+    properties = TextAreaField("Properties (JSON)", default="{}")
+    submit = SubmitField("Save Changes")
+
+
+class LogMeasurementForm(FlaskForm):
+    value = FloatField(
+        "Value",
+        validators=[DataRequired(), NumberRange(min=-100000, max=100000)],
+        render_kw={"type": "number", "step": "any"},
     )
     notes = TextAreaField("Notes")
     properties = TextAreaField("Properties (JSON)", default="{}")
@@ -91,17 +129,32 @@ class NewActionForm(FlaskForm):
     name = StringField(
         "Name", validators=[DataRequired()], render_kw={"autocomplete": "activity"}
     )
+    kind = SelectField(
+        "Tracking type",
+        choices=[
+            ("count", "Count (X times per day)"),
+            ("measure", "Measurement (a value, e.g. weight)"),
+        ],
+        coerce=str,
+        default="count",
+        validators=[DataRequired()],
+    )
+    unit = StringField("Unit", default="", render_kw={"placeholder": "e.g. kg"})
     notes = TextAreaField("Notes", default="")
     properties = TextAreaField("Properties (JSON)", default="{}")
     submit = SubmitField("Save Changes")
 
+    def validate_unit(self, field):
+        if self.kind.data == "measure" and not (field.data or "").strip():
+            raise ValidationError("Measurements require a unit, e.g. 'kg'.")
+
     def validate_name(self, field):
         """
         Validate that the current user is authenticated and that the provided action name is not already used by that user.
-        
+
         Parameters:
             field: The form field containing the proposed action name (string).
-        
+
         Raises:
             ValidationError: If no user is authenticated or if an action with the same name already exists for the current user.
         """

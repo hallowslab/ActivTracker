@@ -59,38 +59,55 @@ def index():
     # Prepare summary for chart
     summary_counts = {}
 
+    def fit_trend(values):
+        x = np.arange(len(values))
+        mask = np.array([v is not None for v in values])
+        y = np.array([v for v in values if v is not None], dtype=float)
+        xm = x[mask]
+        if len(y) > 1:
+            slope, intercept = np.polyfit(xm, y, 1)
+            return (intercept + slope * x).tolist()
+        if len(y) == 1:
+            return [float(y[0])] * len(values)
+        return [None] * len(values)
+
     for action in actions:
         assert days is not None
         timeseries = get_activity_timeseries(user.id, action.id, days=days)
         labels = [entry["date"] for entry in timeseries]
-        values = [entry["delta"] for entry in timeseries]
-        total_actions += sum(values)
+        values = [entry["value"] for entry in timeseries]
+        is_measure = action.kind == "measure"
 
-        # trend line
-        x = np.arange(len(values))
-        y = np.array(values)
-        if len(values) > 1:
-            slope, intercept = np.polyfit(x, y, 1)
-            trend_line = (intercept + slope * x).tolist()
+        if is_measure:
+            readings = [v for v in values if v is not None]
+            latest = readings[-1] if readings else None
+            change = (readings[-1] - readings[0]) if readings else None
+            trend_line = fit_trend(values)
         else:
-            trend_line = values
+            total_actions += sum(values)
+            summary_counts[action.name] = sum(values)
+            latest = None
+            change = None
+            trend_line = fit_trend(values)
 
         activity_data.append(
             {
                 "name": action.name,
+                "kind": action.kind,
+                "unit": action.unit,
                 "values": values,
                 "trend_line": trend_line,
                 "labels": labels,
+                "latest": latest,
+                "change": round(change, 2) if change is not None else None,
             }
         )
 
-        # accumulate for summary
-        summary_counts[action.name] = sum(values)
-
-    # compute trend change
-    if activity_data and days >= 14:
-        first_total = sum(sum(a["values"][:7]) for a in activity_data)
-        last_total = sum(sum(a["values"][-7:]) for a in activity_data)
+    # compute trend change (count actions only; measurement sums are meaningless)
+    count_series = [a["values"] for a in activity_data if a["kind"] != "measure"]
+    if count_series and days >= 14:
+        first_total = sum(sum(v for v in a[:7] if v is not None) for a in count_series)
+        last_total = sum(sum(v for v in a[-7:] if v is not None) for a in count_series)
         trend_change = (
             round(((last_total - first_total) / first_total * 100), 1)
             if first_total
@@ -174,15 +191,18 @@ def activity_summary():
     # Compute time series and trend
     timeseries = get_activity_timeseries(user.id, action_id, days=days)
     labels = [entry["date"] for entry in timeseries]
-    values = [entry["delta"] for entry in timeseries]
+    values = [entry["value"] for entry in timeseries]
 
     x = np.arange(len(values))
-    y = np.array(values)
-    if len(values) > 1:
-        slope, intercept = np.polyfit(x, y, 1)
+    mask = np.array([v is not None for v in values])
+    y = np.array([v for v in values if v is not None], dtype=float)
+    if len(y) > 1:
+        slope, intercept = np.polyfit(x[mask], y, 1)
         trend_line = (intercept + slope * x).tolist()
+    elif len(y) == 1:
+        trend_line = [float(y[0])] * len(values)
     else:
-        trend_line = values
+        trend_line = [None] * len(values)
 
     data = {
         "action": action,
@@ -191,6 +211,7 @@ def activity_summary():
         "_values": values,
         "days": days,
         "trend_line": trend_line,
+        "is_measure": action.kind == "measure",
     }
     return render_template("activity_summary.j2", form=form, data=data)
 

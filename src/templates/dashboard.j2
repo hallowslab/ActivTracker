@@ -38,6 +38,21 @@
             {% for activity in activity_data %}
                 <div class="card activity">
                     <h3>{{ activity.name }}</h3>
+                    {% if activity.kind == 'measure' %}
+                        <p class="measure-summary">
+                            Latest:
+                            <strong>
+                                {% if activity.latest is not none %}
+                                    {{ '%g'|format(activity.latest) }} {{ activity.unit }}
+                                {% else %}
+                                    no reading
+                                {% endif %}
+                            </strong>
+                            {% if activity.change is not none %}
+                                · {{ '%+g'|format(activity.change) }} {{ activity.unit }} over {{ period }}
+                            {% endif %}
+                        </p>
+                    {% endif %}
                     <div class="chart-wrapper">
                         <canvas id="chart-{{ loop.index0 }}"></canvas>
                     </div>
@@ -77,6 +92,8 @@ new Chart(summaryCtx, {
 const activityData = {{ activity_data | tojson }};
 activityData.forEach((activity, index) => {
     const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+    const isMeasure = activity.kind === 'measure';
+    const unit = activity.unit || '';
     const trendColor = activity.trend_line[activity.trend_line.length-1] >= activity.trend_line[0]
                        ? '#0d6efd'
                        : '#FFB300';
@@ -87,12 +104,13 @@ activityData.forEach((activity, index) => {
             labels: activity.labels,
             datasets: [
                 {
-                    label: 'Delta per day',
+                    label: isMeasure ? (unit ? `Avg ${unit}` : 'Reading') : 'Delta per day',
                     data: activity.values,
                     fill: false,
                     borderColor: '#2F9C95',
                     backgroundColor: 'rgba(75,192,192,0.2)',
-                    tension: 0.3
+                    tension: 0.3,
+                    spanGaps: true
                 },
                 {
                     label: 'Trend',
@@ -110,7 +128,10 @@ activityData.forEach((activity, index) => {
             plugins: { legend: { display: true } },
             scales: {
                 x: { title: { display: true, text: 'Date' } },
-                y: { beginAtZero: true, title: { display: true, text: 'Delta count' } }
+                y: {
+                    beginAtZero: !isMeasure,
+                    title: { display: true, text: isMeasure ? unit : 'Delta count' }
+                }
             }
         }
     });

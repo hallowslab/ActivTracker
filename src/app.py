@@ -6,7 +6,7 @@ from flask import Flask, redirect, url_for
 from flask_wtf.csrf import CSRFProtect
 
 from cli import collect_static, create_test_data
-from database import db_session
+from database import db_session, ensure_schema
 from routes.actions import action_bp
 from routes.api import api_bp
 from routes.auth import auth_bp
@@ -35,7 +35,7 @@ app.cli.add_command(collect_static)
 def shutdown_session(exception=None):
     """
     Remove the current database session when the application context is torn down.
-    
+
     Parameters:
         exception (Exception | None): Optional exception passed by Flask's teardown machinery; this function ignores it.
     """
@@ -46,7 +46,7 @@ def shutdown_session(exception=None):
 def index():
     """
     Redirects the client to the dashboard index route.
-    
+
     Returns:
         A redirect response that directs the client to the 'dashboard.index' endpoint.
     """
@@ -56,10 +56,10 @@ def index():
 def load_secret(path: Path = Path(".secret")):
     """
     Load and return the contents of a secret file.
-    
+
     Parameters:
         path (Path): Path to the secret file (defaults to ".secret").
-    
+
     Returns:
         str or None: The file contents as a string if the path exists and is a file, otherwise None.
     """
@@ -74,14 +74,15 @@ def load_secret(path: Path = Path(".secret")):
 def init():
     """
     Initialize and configure the Flask application, including loading environment variables, setting the secret key, and enabling CSRF protection.
-    
+
     Returns:
         The configured Flask application instance.
-    
+
     Raises:
         RuntimeError: If FLASK_ENV is "production" and the secret key file cannot be loaded.
     """
     load_dotenv()
+    ensure_schema()  # additive column migrations: clone + restart is enough
     print(f"FLASK_ENV: {FLASK_ENV}, DEBUG: {_DEBUG}")
     app.secret_key = "!DEBUG!"
     if FLASK_ENV == "production":

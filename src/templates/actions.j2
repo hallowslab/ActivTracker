@@ -17,6 +17,13 @@
                 <li class="card action">
                     <div class="action-title">
                         <h3>{{ act.name }}</h3>
+                        {% if act.kind == 'measure' %}
+                            <span class="badge badge-measure">measure
+                                {% if act.unit %}· {{ act.unit }}{% endif %}
+                            </span>
+                        {% else %}
+                            <span class="badge badge-count">count</span>
+                        {% endif %}
                     </div>
                     {% if act.notes %}<div class="action-notes">{{ act.notes }}</div>{% endif %}
                     {% if act.properties %}

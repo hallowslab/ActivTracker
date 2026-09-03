@@ -36,7 +36,11 @@
                     <div class="log-meta">
                         <span>{{ log.timestamp.strftime("%d-%m-%Y %H:%M:%S") }}</span>
                         <div class="log-actions">
-                            <span class="log-delta">▲{{ log.delta }}</span>
+                            {% if action.kind == 'measure' and log.value is not none %}
+                                <span class="log-delta">{{ '%g'|format(log.value) }}{{ ' ' + action.unit if action.unit }}</span>
+                            {% else %}
+                                <span class="log-delta">▲{{ log.delta }}</span>
+                            {% endif %}
                             <button class="btn btn-sm btn-info"
                                     onclick="window.location.href='{{ url_for("action.edit_activity", log_id=log.id) }}'">
                                 Edit

@@ -184,3 +184,10 @@ header {
     padding: .5rem;
 }
 }
+
+/* --- Measurement summary --- */
+.measure-summary {
+color: #555;
+font-size: 0.95rem;
+margin: 0.25rem 0 0.75rem;
+}

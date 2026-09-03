@@ -13,6 +13,22 @@
                 {% if form.name.errors %}<div class="error">{{ form.name.errors[0] }}</div>{% endif %}
             </div>
             <div>
+                {{ form.kind.label }}
+                {{ form.kind(class="input-text") }}
+                {% if form.kind.errors %}<div class="error">{{ form.kind.errors[0] }}</div>{% endif %}
+                {% if action.logs|length %}
+                    <p class="form-hint">
+                        Changing type converts the {{ action.logs|length }} existing
+                        log(s): counts become readings, readings become counts.
+                    </p>
+                {% endif %}
+            </div>
+            <div>
+                {{ form.unit.label }}
+                {{ form.unit(class="input-text") }}
+                {% if form.unit.errors %}<div class="error">{{ form.unit.errors[0] }}</div>{% endif %}
+            </div>
+            <div>
                 {{ form.notes.label }}
                 {{ form.notes(rows="4", class="input-textarea") }}
             </div>
